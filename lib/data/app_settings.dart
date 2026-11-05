@@ -107,6 +107,42 @@ class AppSettings extends ChangeNotifier {
   }
   set lastBackupDate(DateTime? v) => _set('automaticBackupLastDateMs', v?.millisecondsSinceEpoch);
 
+  // Cloud Sync
+  bool get cloudSyncEnabled => _b('cloudSyncEnabled', false);
+  set cloudSyncEnabled(bool v) => _set('cloudSyncEnabled', v);
+
+  /// Preferences that follow the account to every device. Passcodes, backup
+  /// settings and the disclaimer stay on each device, as in the iOS app.
+  Map<String, dynamic> toSyncValues() => {
+        'homeTitle': homeTitle,
+        'homeImageDisplayMode': homeDisplayMode.rawValue,
+        'homeImageBrightness': homeBrightness,
+        'homeImageBlur': homeBlur,
+        'showHomeSearch': showSearch,
+        'showHomeTimeline': showTimeline,
+        'showHomeReports': showReports,
+        'showHomeStatistics': showStatistics,
+      };
+
+  Future<void> applySyncValues(Map<String, dynamic> m) async {
+    Future<void> put(String key, Object? v) async {
+      if (v == null) return;
+      if (v is bool) await _prefs.setBool(key, v);
+      if (v is String) await _prefs.setString(key, v);
+      if (v is num) await _prefs.setDouble(key, v.toDouble());
+    }
+
+    await put('homeAppearanceTitle', m['homeTitle'] as String?);
+    await put('homeAppearanceDisplayMode', m['homeImageDisplayMode'] as String?);
+    await put('homeAppearanceBrightness', m['homeImageBrightness'] as num?);
+    await put('homeAppearanceBlur', m['homeImageBlur'] as num?);
+    await put('showHomeSearch', m['showHomeSearch'] as bool?);
+    await put('showHomeTimeline', m['showHomeTimeline'] as bool?);
+    await put('showHomeReports', m['showHomeReports'] as bool?);
+    await put('showHomeStatistics', m['showHomeStatistics'] as bool?);
+    notifyListeners();
+  }
+
   // Disclaimer
   bool get developerDisclaimerEnabled => _b('developerDisclaimerEnabled', true);
   set developerDisclaimerEnabled(bool v) => _set('developerDisclaimerEnabled', v);

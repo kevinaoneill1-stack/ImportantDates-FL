@@ -4,6 +4,8 @@ import 'app_info.dart';
 import 'data/app_settings.dart';
 import 'data/app_store.dart';
 import 'screens/lock_gate.dart';
+import 'services/attachment_sync.dart';
+import 'services/cloud_sync.dart';
 import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
@@ -12,6 +14,8 @@ Future<void> main() async {
   await AppSettings.load();
   await AppStore.instance.load();
   await NotificationService.init();
+  await CloudSync.instance.init();
+  AttachmentSync.instance.init();
   runApp(const ImportantDatesApp());
 }
 

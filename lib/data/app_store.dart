@@ -29,6 +29,19 @@ class AppStore extends ChangeNotifier {
   late Directory _attachmentsDir;
   Timer? _backupDebounce;
 
+  /// Cloud Sync hooks (set by CloudSync / AttachmentSync when they start).
+  /// [onLocalChange] runs after every change made on this device.
+  void Function()? onLocalChange;
+
+  /// Runs when an attachment is removed on this device, so its cloud copy
+  /// can be deleted too.
+  Future<void> Function(ItemAttachment attachment)? onAttachmentRemoved;
+
+  /// True when the data file existed but could not be read at start-up. The
+  /// file is copied aside first (important_dates.json.unreadable-…), so it is
+  /// never lost when the app later saves.
+  bool loadFailed = false;
+
   List<ImportantDate> get dates => List.unmodifiable(_dates);
   List<String> get items => List.unmodifiable(_items);
   List<String> get people => List.unmodifiable(_people);
@@ -61,7 +74,11 @@ class AppStore extends ChangeNotifier {
           ..addAll(((json['people'] as List?) ?? []).map(_nameOf));
         _sortLists();
       } catch (e) {
+        loadFailed = true;
         debugPrint('Important Dates: could not read data file: $e');
+        try {
+          await _dataFile.copy('${_dataFile.path}.unreadable-${DateTime.now().millisecondsSinceEpoch}');
+        } catch (_) {}
       }
     }
   }
@@ -73,7 +90,7 @@ class AppStore extends ChangeNotifier {
     _people.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
   }
 
-  Future<void> _save({bool triggerBackup = true}) async {
+  Future<void> _save({bool triggerBackup = true, bool local = true}) async {
     final json = {
       'schema': 1,
       'dates': _dates.map((d) => d.toJson()).toList(),
@@ -85,7 +102,31 @@ class AppStore extends ChangeNotifier {
     await tmp.rename(_dataFile.path);
     notifyListeners();
     if (triggerBackup) _scheduleChangeBackup();
+    if (local) onLocalChange?.call();
   }
+
+  // ---- Cloud Sync access ----
+
+  /// The live lists, for CloudSync to apply changes from other devices.
+  List<ImportantDate> get syncDates => _dates;
+  List<String> get syncItems => _items;
+  List<String> get syncPeople => _people;
+
+  /// Saves changes that came from the cloud without sending them back.
+  Future<void> remoteChanged() async {
+    _sortLists();
+    await _save(local: false);
+  }
+
+  /// Deletes the local copies of attachment files (not their cloud copies).
+  Future<void> deleteLocalAttachmentFiles(Iterable<ItemAttachment> attachments) async {
+    for (final a in attachments) {
+      await _deleteAttachmentFile(a.id);
+    }
+  }
+
+  /// Saves after an attachment's cloud id changed (no backup needed).
+  Future<void> attachmentsChanged() => _save(triggerBackup: false);
 
   /// Changes made close together share one backup, four seconds after the
   /// last change (same behaviour as the native app).
@@ -123,10 +164,11 @@ class AppStore extends ChangeNotifier {
 
   Future<void> delete(ImportantDate date) async {
     await NotificationService.cancel(date);
+    _dates.removeWhere((d) => d.id == date.id);
     for (final a in date.attachments) {
       await _deleteAttachmentFile(a.id);
+      await onAttachmentRemoved?.call(a);
     }
-    _dates.removeWhere((d) => d.id == date.id);
     await _save();
   }
 
@@ -161,6 +203,7 @@ class AppStore extends ChangeNotifier {
   Future<void> removeAttachment(ImportantDate date, ItemAttachment att) async {
     await _deleteAttachmentFile(att.id);
     date.attachments.removeWhere((a) => a.id == att.id);
+    await onAttachmentRemoved?.call(att);
     await _save();
   }
 
@@ -198,6 +241,7 @@ class AppStore extends ChangeNotifier {
 
   Future<void> deleteAll() async {
     await NotificationService.cancelAll();
+    final attachments = [for (final d in _dates) ...d.attachments];
     _dates.clear();
     _items.clear();
     _people.clear();
@@ -205,6 +249,9 @@ class AppStore extends ChangeNotifier {
       await _attachmentsDir.delete(recursive: true);
     }
     await _attachmentsDir.create(recursive: true);
+    for (final a in attachments) {
+      await onAttachmentRemoved?.call(a);
+    }
     await _save();
   }
 

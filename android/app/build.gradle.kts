@@ -23,7 +23,8 @@ android {
 
     defaultConfig {
         applicationId = "com.kevinaoneill.importantdates"
-        minSdk = flutter.minSdkVersion
+        // Firebase needs Android 6.0 (API 23) or newer.
+        minSdk = maxOf(23, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         // Version 3 / Build 61 come from pubspec.yaml (version: 3.0.0+61).
         versionCode = flutter.versionCode

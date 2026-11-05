@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// Security rules for Important Dates Cloud Sync (Firebase project: ImportantDates).
+// Each person can only read and write their own data under users/{uid}.
+// Attachment records (users/{uid}/documents) follow the shared DocumentStore
+// rules from the document-store folder.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // ---------- Important Dates records ----------
+
+    // The user document itself (users/{uid})
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Everything under the user (dates, itemTypes, people, meta)
+    // EXCEPT `documents`, which has its own validated rules below.
+    match /users/{uid}/{collection}/{rest=**} {
+      allow read, write: if isOwner(uid) && collection != 'documents';
+    }
+
+    // ---------- DocumentStore ----------
+
+    function isOptionalString(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    function validDoc(uid, docId, data) {
+      return data.keys().hasAll(['appId', 'filename', 'mimeType', 'size',
+                                 'storagePath', 'sha256', 'version',
+                                 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['appId', 'filename', 'mimeType', 'size',
+                                'storagePath', 'sha256', 'version',
+                                'createdAt', 'updatedAt',
+                                'title', 'notes', 'tags', 'links', 'expiresAt'])
+        && data.appId is string && data.appId.matches('[a-z0-9-]{1,40}')
+        && data.filename is string && data.filename.size() >= 1 && data.filename.size() <= 255
+        && !data.filename.matches('.*/.*')
+        && data.mimeType is string && data.mimeType.size() <= 127
+        && data.size is int && data.size >= 0 && data.size <= 50 * 1024 * 1024
+        && data.sha256 is string && data.sha256.matches('[0-9a-f]{64}')
+        && data.version is int && data.version >= 1
+        && data.storagePath == 'users/' + uid + '/' + data.appId + '/docs/' + docId + '/' + data.filename
+        && data.updatedAt == request.time
+        && isOptionalString(data, 'title', 200)
+        && isOptionalString(data, 'notes', 2000)
+        && (!('tags' in data) || (data.tags is list && data.tags.size() <= 20))
+        && (!('links' in data) || (data.links is map && data.links.size() <= 20))
+        && (!('expiresAt' in data) || data.expiresAt is timestamp);
+    }
+
+    match /users/{uid}/documents/{docId} {
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid)
+        && validDoc(uid, docId, request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.version == 1;
+
+      allow update: if isOwner(uid)
+        && validDoc(uid, docId, request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.appId == resource.data.appId
+        && (request.resource.data.version == resource.data.version
+            || request.resource.data.version == resource.data.version + 1);
+
+      allow delete: if isOwner(uid);
+    }
+  }
+}

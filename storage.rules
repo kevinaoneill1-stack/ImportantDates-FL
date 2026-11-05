@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// DocumentStore rules: each user can only read and write their own files,
+// up to 50 MB each. Any file type is allowed (PDFs, photos, Wallet passes,
+// Office files...).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid}/{appId}/docs/{docId}/{fileName} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && appId.matches('[a-z0-9-]{1,40}')
+        && request.resource.size <= 50 * 1024 * 1024;
+      allow delete: if isOwner(uid);
+    }
+  }
+}

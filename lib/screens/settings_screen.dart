@@ -7,10 +7,12 @@ import '../data/app_settings.dart';
 import '../data/app_store.dart';
 import '../data/developer_access.dart';
 import '../services/backup_service.dart';
+import '../services/cloud_sync.dart';
 import '../services/file_actions.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
+import 'cloud_sync_screen.dart';
 import 'developer_controls_screen.dart';
 import 'home_screen.dart' show HomeHero;
 import 'passcode_screens.dart';
@@ -296,8 +298,16 @@ class _AutomaticBackupCard extends StatelessWidget {
             label: const Text('Back Up Now'),
             onPressed: () async {
               try {
-                await BackupService.createAutomaticBackup();
-                if (context.mounted) await showMessage(context, 'Backup Complete', 'An automatic backup was created successfully.');
+                final file = await BackupService.createAutomaticBackup();
+                if (context.mounted) {
+                  await showMessage(
+                    context,
+                    file == null ? 'Backup Skipped' : 'Backup Complete',
+                    file == null
+                        ? 'There is no data to back up, so the latest backup (which has data) was kept.'
+                        : 'An automatic backup was created successfully.',
+                  );
+                }
               } catch (e) {
                 if (context.mounted) await showMessage(context, 'Backup Failed', e.toString());
               }
@@ -313,23 +323,50 @@ class _StorageCard extends StatelessWidget {
   const _StorageCard();
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      accent: AppTheme.warning,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const SectionTitle(title: 'Data & Sync Status', subtitle: 'Local device storage active', icon: Icons.phone_iphone_rounded),
-        const SizedBox(height: 10),
-        const Row(children: [
-          Icon(Icons.cloud_off_rounded, color: AppTheme.warning),
-          SizedBox(width: 8),
-          Text('Using Local Storage', style: TextStyle(color: AppTheme.warning, fontWeight: FontWeight.w600, fontSize: 16)),
-        ]),
-        const SizedBox(height: 8),
-        Text(
-          'Important Dates stores your records privately on this device. To move data between your iPhone, iPad, Mac '
-          'and Android devices, use Manage → Backup & Restore to export a backup on one device and restore it on another.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ]),
+    return ListenableBuilder(
+      listenable: CloudSync.instance,
+      builder: (context, _) {
+        final sync = CloudSync.instance;
+        final on = sync.configured && sync.user != null && sync.enabled;
+        final color = on ? AppTheme.success : AppTheme.warning;
+        final subtitle = !sync.configured
+            ? 'Cloud Sync is not set up yet'
+            : sync.user == null
+                ? 'Not signed in – local device storage'
+                : sync.enabled
+                    ? (sync.status.isEmpty ? 'Starting…' : sync.status)
+                    : 'Sync is off – local device storage';
+        return AppCard(
+          accent: color,
+          onTap: () => pushPage(context, const CloudSyncScreen()),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            SectionTitle(
+              title: 'Data & Sync Status',
+              subtitle: subtitle,
+              icon: on ? Icons.cloud_done_rounded : Icons.phone_iphone_rounded,
+              trailing: const Icon(Icons.chevron_right_rounded),
+            ),
+            const SizedBox(height: 10),
+            Row(children: [
+              Icon(on ? Icons.cloud_done_rounded : Icons.cloud_off_rounded, color: color),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(on ? 'Cloud Sync On${sync.user?.email == null ? '' : ' (${sync.user!.email})'}' : 'Using Local Storage',
+                    style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 16)),
+              ),
+            ]),
+            const SizedBox(height: 8),
+            Text(
+              on
+                  ? 'Your dates, item types, names, Home settings and attachment files stay the same on every iPhone, '
+                      'iPad, Mac and Android device signed in to this account. Tap to manage Cloud Sync.'
+                  : 'Important Dates stores your records on this device. Tap to sign in to Cloud Sync and keep them the '
+                      'same on all your devices, or use Manage → Backup & Restore to move data by hand.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ]),
+        );
+      },
     );
   }
 }
@@ -356,6 +393,7 @@ class _DeleteAllCard extends StatelessWidget {
         context,
         title: 'Delete all app data?',
         message: 'This permanently removes every saved date, attachment, reusable item and name. '
+            '${CloudSync.instance.running ? 'Cloud Sync is on, so they are also removed from the cloud and your other devices. ' : ''}'
             'Create a backup first if you may need this information again.',
         confirmLabel: 'Continue',
       );
@@ -365,6 +403,8 @@ class _DeleteAllCard extends StatelessWidget {
         if (!verified) return;
       }
       try {
+        // Deliberate: also delete everything from the cloud and other devices.
+        CloudSync.instance.allowBulkDeleteOnce();
         await AppStore.instance.deleteAll();
         if (context.mounted) {
           await showMessage(context, 'All Data Deleted', 'All saved dates, attachments, items and names have been permanently deleted.');

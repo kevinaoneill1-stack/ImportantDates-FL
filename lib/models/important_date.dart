@@ -8,12 +8,19 @@ class ItemAttachment {
     required this.fileName,
     required this.mimeType,
     required this.createdAt,
+    this.cloudDocId,
   });
+
+  static String? _nonEmpty(Object? v) => v is String && v.isNotEmpty ? v : null;
 
   final String id;
   String fileName;
   String mimeType;
   DateTime createdAt;
+
+  /// Id of the file's master copy in the cloud DocumentStore, once uploaded
+  /// (Cloud Sync). Null for files that are only on this device.
+  String? cloudDocId;
 
   bool get isPdf => mimeType.contains('pdf') || fileName.toLowerCase().endsWith('.pdf');
   bool get isImage {
@@ -28,6 +35,7 @@ class ItemAttachment {
         'fileName': fileName,
         'mimeType': mimeType,
         'createdAt': DateFormatting.toIso(createdAt),
+        if (cloudDocId != null) 'cloudDocId': cloudDocId,
       };
 
   factory ItemAttachment.fromJson(Map<String, dynamic> j) => ItemAttachment(
@@ -35,6 +43,7 @@ class ItemAttachment {
         fileName: j['fileName'] as String? ?? 'Attachment',
         mimeType: j['mimeType'] as String? ?? 'application/octet-stream',
         createdAt: DateFormatting.parseIso(j['createdAt']) ?? DateTime.now(),
+        cloudDocId: _nonEmpty(j['cloudDocId']),
       );
 }
 

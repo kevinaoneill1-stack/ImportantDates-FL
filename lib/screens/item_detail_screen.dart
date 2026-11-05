@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:document_store/document_store.dart' show DocumentStoreException;
 import 'package:flutter/material.dart';
 
 import '../data/app_store.dart';
 import '../models/important_date.dart';
+import '../services/attachment_sync.dart';
 import '../services/file_actions.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
@@ -170,6 +174,22 @@ class ItemDetailScreen extends StatelessWidget {
 
   Widget _attachmentRow(BuildContext context, ImportantDate item, ItemAttachment a) {
     final t = Theme.of(context).textTheme;
+    final sync = AttachmentSync.instance;
+    return ListenableBuilder(
+      listenable: sync,
+      builder: (context, _) => _attachmentTile(context, t, item, a, sync),
+    );
+  }
+
+  Widget _attachmentTile(BuildContext context, TextTheme t, ImportantDate item, ItemAttachment a, AttachmentSync sync) {
+    final onDevice = sync.isOnDevice(a);
+    final status = sync.downloading.contains(a.id)
+        ? 'Downloading…'
+        : !onDevice && a.cloudDocId != null
+            ? 'In the cloud – tap to download'
+            : a.cloudDocId != null
+                ? 'On this device and in the cloud'
+                : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
@@ -189,8 +209,13 @@ class ItemDetailScreen extends StatelessWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(a.fileName, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(DateFormatting.abbreviated(a.createdAt), style: t.bodySmall),
+                  if (status != null) Text(status, style: t.bodySmall),
                 ]),
               ),
+              if (sync.downloading.contains(a.id))
+                const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+              else if (!onDevice && a.cloudDocId != null)
+                const Icon(Icons.cloud_download_outlined, size: 20),
               IconButton(
                 tooltip: 'Remove',
                 icon: const Icon(Icons.delete_outline_rounded, size: 20),
@@ -220,7 +245,22 @@ class ItemDetailScreen extends StatelessWidget {
   }
 
   Future<void> _preview(BuildContext context, ItemAttachment a) async {
-    final file = AppStore.instance.attachmentFile(a.id);
+    final File file;
+    try {
+      final local = await AttachmentSync.instance.ensureLocal(a);
+      if (local == null) {
+        if (context.mounted) await showMessage(context, 'File Not Available', 'This file is not on this device.');
+        return;
+      }
+      file = local;
+    } on DocumentStoreException catch (e) {
+      if (context.mounted) await showMessage(context, 'Cannot Download File', e.userMessage);
+      return;
+    } catch (e) {
+      if (context.mounted) await showMessage(context, 'Cannot Download File', e.toString());
+      return;
+    }
+    if (!context.mounted) return;
     if (a.isImage && !a.fileName.toLowerCase().endsWith('.heic')) {
       await Navigator.of(context).push(MaterialPageRoute(
         fullscreenDialog: true,

@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 63 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+63
+# Version 3, Build 64 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+64
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
@@ -23,6 +23,14 @@ dependencies:
   open_filex: ^4.7.0
   url_launcher: ^6.3.2
   pdf: ^3.11.3
+  # Cloud Sync (Firebase), as in MyTravelApp-FL.
+  firebase_core: ">=3.0.0 <6.0.0"
+  firebase_auth: ">=5.0.0 <8.0.0"
+  cloud_firestore: ">=5.0.0 <8.0.0"
+  firebase_storage: ">=12.0.0 <16.0.0"
+  # Shared document storage used by all my apps (Flutter Apps/document-store).
+  document_store:
+    path: ../../document-store/packages/document_store
 
 # image 4.11.0 (pulled in by pdf) calls ZLibDecoder.decodeLazy, which the
 # resolved archive 4.0.x does not have. Pin image to a release that builds.

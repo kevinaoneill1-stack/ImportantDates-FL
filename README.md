@@ -1,25 +1,42 @@
-# Important Dates — Flutter (Version 3, Build 61)
+# Important Dates — Flutter edition
 
-A Flutter rebuild of the native iOS **ImportantDates** app (v3 / Build 61) for
-**iOS, iPadOS, macOS and Android** from one codebase.
+**Version 3.0.64FL** (Version 3 • Build 64FL)
 
-## First run
+A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
+Mac and Android** from one code base. It replaces the native app on the App
+Store (same bundle identifier).
 
-```bash
-cd ImportantDates_v3_Build61
-flutter pub get
-flutter run -d ios        # or: -d macos, -d android, or pick a device
+The build number goes up by one with every change set
+(`dart run tool/bump_build.dart`). The project lives in one fixed folder,
+`Flutter Apps/ImportantDates/ImportantDates_FL`, which is a git repository
+(GitHub: `kevinaoneill1-stack/ImportantDates-FL`): every build is a commit with
+a tag such as `v3.0.64FL` (see **Versions with git** below).
+
+## Getting started
+
+Requires Flutter 3.35 or newer, and the shared `document-store` folder next to
+the `ImportantDates` folder (see CLOUD_SYNC_SETUP.md):
+
+```
+Flutter Apps/
+  document-store/
+  ImportantDates/ImportantDates_FL/
 ```
 
-`flutter pub get` fetches packages and creates `ios/Podfile`, `macos/Podfile`,
-`android/local.properties` and the generated plugin files automatically.
+```bash
+cd "/Users/kevinoneill/Kevin/Flutter Apps/ImportantDates/ImportantDates_FL"
+flutter pub get
+flutter run                 # pick a connected device / simulator
+flutter run -d macos
+flutter test
+```
 
 * **iOS / macOS** – open `ios/Runner.xcworkspace` (or `macos/Runner.xcworkspace`)
-  in Xcode once to confirm signing. Team `C62Q8V6ZP5` is already set for iOS;
-  pick it under *Signing & Capabilities* for macOS.
+  in Xcode once to confirm signing. Team `C62Q8V6ZP5` is set for both.
+  macOS is signed with "Apple Development" because Firebase sign-in uses the keychain.
 * **Android** – needs JDK 17+ (Android Studio's bundled JDK is fine). Release
   builds are signed with the debug key until you add your own keystore in
-  `android/app/build.gradle.kts`.
+  `android/app/build.gradle.kts`. Minimum Android 6.0 (API 23) for Firebase.
 
 ## Identifiers
 
@@ -28,15 +45,55 @@ flutter run -d ios        # or: -d macos, -d android, or pick a device
 | iOS / macOS | `com.kevinaoneill.ImportantDates` (same App Store record as the native app) |
 | Android | `com.kevinaoneill.importantdates` |
 
-This build replaces the native app on the App Store. Records stored by the native
-app (SwiftData/iCloud) are not read automatically: export a backup in the native
-app before updating, then use Manage → Backup & Restore → Restore Backup.
+Records stored by the native app (SwiftData/iCloud) are not read automatically:
+export a backup in the native app before updating, then use Manage → Backup &
+Restore → Restore Backup.
 
-## Version numbers
+## Cloud Sync (from 3.0.64FL)
 
-`pubspec.yaml` → `version: 3.0.0+61` (Flutter requires a three-part version;
-the app UI shows "Version 3 • Build 61" from `lib/app_info.dart`). Bump both
-together for the next build.
+Dates, item types, names, Home settings and attachment files sync between
+iPhone, iPad, Mac and Android through the **ImportantDates** Firebase project
+(Firestore for records, Storage for files through the shared `document_store`
+package, appId `important-dates`). One-time set-up: **CLOUD_SYNC_SETUP.md**.
+Until it is done the app works exactly as before, with Cloud Sync shown as
+"Not set up yet".
+
+* Attachments added on any device upload in the background; a file is
+  downloaded to another device the first time it is opened, and automatically
+  for dates due within 30 days. **Download All Attachments** on the Cloud Sync
+  page keeps every file offline; Export Backup downloads them first so the
+  backup is complete.
+* **Safer sync** (as in MyTravelApp 4.6.142FL): a record is only deleted in the
+  cloud when it was on this device and you deleted it. A device whose data is
+  empty (reinstalled, restored, unreadable) downloads everything again instead.
+  Deleting more than 10 records and more than half of everything at once is
+  blocked, except for Delete All Data and Restore Backup, which ask first.
+* **Daily backups**: the latest automatic backup is never replaced by an empty
+  data set, and a copy is kept for each of the last 7 days (Manage › Backup &
+  Restore › Daily Backups, tap one to restore it).
+
+## Versions with git (from 3.0.63FL)
+
+After making changes:
+
+```bash
+dart run tool/bump_build.dart          # e.g. 64FL -> 65FL
+git add -A
+git commit -m "ImportantDates 3.0.65FL: what changed"
+git tag v3.0.65FL
+git push && git push --tags
+```
+
+Useful commands:
+
+```bash
+git log --oneline                      # list builds
+git diff v3.0.63FL v3.0.64FL           # what changed between two builds
+git switch --detach v3.0.63FL          # look at / build an old version
+git switch main                        # back to the latest
+```
+
+The folder name no longer changes between builds, so Xcode caches keep working.
 
 ## Feature parity with the native app
 
@@ -54,10 +111,10 @@ together for the next build.
 | Travel Documents with search & show-completed | ✅ |
 | Manage Items / Names with duplicate check & delete confirmation | ✅ |
 | Backup & Restore (JSON incl. attachments & Home appearance) | ✅ **same file format as the iOS app — backups restore in either app** |
-| Automatic backups (daily…monthly, change-triggered, keep 10) | ✅ |
+| Automatic backups (daily…monthly, change-triggered, keep 10) | ✅ plus a copy for each of the last 7 days; never replaced by an empty data set |
 | App passcode lock, Delete-All passcode | ✅ |
 | Launch disclaimer, Developer Controls (707 / 1028) | ✅ Debug & Profile builds only (see `lib/data/developer_access.dart`) |
-| SwiftData + iCloud/CloudKit sync | ⚠️ Local storage on each device; move data with Backup & Restore |
+| SwiftData + iCloud/CloudKit sync | ✅ **Cloud Sync through Firebase** (from 3.0.64FL), including attachment files |
 | Home Screen widget, Apple Watch app | ❌ Not included (native-only targets) |
 
 ## Project layout
@@ -67,9 +124,13 @@ lib/
   main.dart, app_info.dart
   models/      ImportantDate, ItemAttachment
   data/        AppStore (records), AppSettings (preferences), DeveloperAccess
-  services/    notifications, backups, PDF reports, file share/pick/open
+  services/    Cloud Sync, attachment sync, notifications, backups, PDF reports,
+               file share/pick/open
+  firebase_options.dart   placeholder until `flutterfire configure`
   theme/       colours, category icons, status colours
   widgets/     cards, headers, page scaffolding
   screens/     every screen of the app
 assets/        default Home image, DejaVu fonts for PDF reports
+tool/          bump_build.dart
+firestore.rules, storage.rules   Firebase security rules (publish in the console)
 ```
