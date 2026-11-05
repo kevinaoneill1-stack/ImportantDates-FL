@@ -1,0 +1,41 @@
+name: important_dates
+description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
+publish_to: 'none'
+
+# Version 3, Build 63 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+63
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.3
+  path_provider: ^2.1.5
+  intl: '>=0.19.0 <0.21.0'
+  uuid: ^4.5.1
+  flutter_local_notifications: ^19.4.2
+  timezone: ^0.10.1
+  file_picker: ^10.3.3
+  share_plus: ^11.1.0
+  open_filex: ^4.7.0
+  url_launcher: ^6.3.2
+  pdf: ^3.11.3
+
+# image 4.11.0 (pulled in by pdf) calls ZLibDecoder.decodeLazy, which the
+# resolved archive 4.0.x does not have. Pin image to a release that builds.
+dependency_overrides:
+  image: 4.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/fonts/
