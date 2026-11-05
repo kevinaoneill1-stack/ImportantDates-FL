@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "461991683844",
+    "project_id": "importantdates-4b03a",
+    "storage_bucket": "importantdates-4b03a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461991683844:android:a22565ddb4ae43097b9251",
+        "android_client_info": {
+          "package_name": "com.kevinaoneill.importantdates"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWz7exMiZ8t3Gq9LAAg3yqwAt_5A3ZaT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
