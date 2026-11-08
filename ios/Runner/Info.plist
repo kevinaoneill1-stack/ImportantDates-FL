@@ -30,6 +30,8 @@
 	<string>Important Dates does not use your location. This message is required because a system library used for opening and sharing files can reference location services.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose a photo for the Home page or attach a photo to an Important Date.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to unlock Important Dates and keep your records private.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take a photo to attach to an Important Date.</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

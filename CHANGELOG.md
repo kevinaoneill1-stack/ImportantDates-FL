@@ -1,5 +1,9 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.65FL
+- iOS: added the Face ID usage description (NSFaceIDUsageDescription). Without it iOS closed the app as soon as
+  it asked for Face ID on first launch.
+
 ## 3.0.64FL
 - Cloud Sync through a new Firebase project (ImportantDates): dates, item types, names, Home title/appearance and
   Tools shortcuts stay the same on iPhone, iPad, Mac and Android. Sign in under Manage › Cloud Sync.
