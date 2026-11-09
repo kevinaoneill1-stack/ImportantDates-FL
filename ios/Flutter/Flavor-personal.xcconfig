@@ -1,0 +1,4 @@
+// Personal edition (Firebase Cloud Sync). See FLAVORS_SETUP.md.
+APP_DISPLAY_NAME = Important Dates Personal
+// Not used by this edition; Info.plist needs some URL scheme value.
+GOOGLE_REVERSED_CLIENT_ID = com.kevinaoneill.ImportantDates.personal

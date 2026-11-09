@@ -1,5 +1,23 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.66FL
+- Two editions from one code base (build flavors, see FLAVORS_SETUP.md):
+  - **personal** – Firebase Cloud Sync as before; bundle id `com.kevinaoneill.ImportantDates.personal`
+    (Android `com.kevinaoneill.importantdates.personal`), shown as "Important Dates Personal".
+    Entry point `lib/main_personal.dart`.
+  - **public** – the store app (existing bundle id). Syncs through each user's own Google Drive (hidden app data
+    folder, scope `drive.appdata`): records, item types, names, Home settings and attachment files. No user data
+    is held by the developer. Entry point `lib/main_public.dart`.
+- New DriveSync service with the same safety rules as Cloud Sync (no deletes for missing records, emptied devices
+  download again, bulk-delete guard, unreadable sync files are never overwritten), first-sync Merge / Use Drive
+  choice, Delete My Google Drive Data.
+- Sync-dependent screens (Data & Sync Status, Backup & Restore, attachments, Manage › Cloud Sync) use whichever
+  service the build has.
+- The personal edition has its own app icon with an orange "P" badge (AppIcon-personal on iOS/macOS,
+  android/app/src/personal/res on Android).
+- Android productFlavors; iOS and macOS Debug/Release/Profile-personal and -public configurations and schemes
+  (tool/flavorize_xcode.py), Google sign-in URL scheme in Info.plist, macOS GIDSignIn keychain group.
+
 ## 3.0.65FL
 - iOS: added the Face ID usage description (NSFaceIDUsageDescription). Without it iOS closed the app as soon as
   it asked for Face ID on first launch.

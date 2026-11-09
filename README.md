@@ -1,6 +1,6 @@
 # Important Dates — Flutter edition
 
-**Version 3.0.65FL** (Version 3 • Build 65FL)
+**Version 3.0.66FL** (Version 3 • Build 66FL)
 
 A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
 Mac and Android** from one code base. It replaces the native app on the App
@@ -38,12 +38,29 @@ flutter test
   builds are signed with the debug key until you add your own keystore in
   `android/app/build.gradle.kts`. Minimum Android 6.0 (API 23) for Firebase.
 
+## Two editions (from 3.0.66FL)
+
+One code base, two build flavors. Always build with `--flavor` and the matching
+entry point (details and one-time set-up: **FLAVORS_SETUP.md**):
+
+| Edition | Sync | iOS / macOS id | Android id | Build |
+|---|---|---|---|---|
+| **public** (App Store / Play) | each user's own Google Drive | `com.kevinaoneill.ImportantDates` | `com.kevinaoneill.importantdates` | `--flavor public -t lib/main_public.dart` |
+| **personal** (TestFlight / internal testing) | Firebase Cloud Sync | `com.kevinaoneill.ImportantDates.personal` | `com.kevinaoneill.importantdates.personal` | `--flavor personal -t lib/main_personal.dart` |
+
+```bash
+flutter run --flavor personal -t lib/main_personal.dart
+flutter run -d macos --flavor public -t lib/main_public.dart
+flutter build ipa --flavor public -t lib/main_public.dart
+flutter build appbundle --flavor public -t lib/main_public.dart
+```
+
 ## Identifiers
 
 | Platform | Identifier |
 |---|---|
-| iOS / macOS | `com.kevinaoneill.ImportantDates` (same App Store record as the native app) |
-| Android | `com.kevinaoneill.importantdates` |
+| iOS / macOS | `com.kevinaoneill.ImportantDates` (public edition; same App Store record as the native app) |
+| Android | `com.kevinaoneill.importantdates` (public edition) |
 
 Records stored by the native app (SwiftData/iCloud) are not read automatically:
 export a backup in the native app before updating, then use Manage → Backup &

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import 'backup_restore_screen.dart';
-import 'cloud_sync_screen.dart';
 import 'info_screens.dart';
 import 'manage_list_screen.dart';
 import 'settings_screen.dart';
+import 'sync_screen.dart';
 
 class ManagementScreen extends StatelessWidget {
   const ManagementScreen({super.key});
@@ -51,7 +51,7 @@ class ManagementScreen extends StatelessWidget {
             icon: Icons.cloud_sync_rounded,
             color: Colors.blue,
             subtitle: 'Keep your dates the same on every device',
-            onTap: () => pushPage(context, const CloudSyncScreen()),
+            onTap: () => pushPage(context, syncScreen()),
           ),
           QuickActionButton(
             title: 'Backup & Restore',

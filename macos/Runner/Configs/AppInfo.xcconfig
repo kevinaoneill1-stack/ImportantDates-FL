@@ -12,3 +12,7 @@ PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 Kevin O'Neill. All rights reserved.
+
+// Public edition: the "iOS URL scheme" of the iOS OAuth client in
+// GoogleDriveConfig.iosClientId (com.googleusercontent.apps.…). See FLAVORS_SETUP.md.
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.REPLACE-ME

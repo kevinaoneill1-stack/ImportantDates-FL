@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,7 +8,7 @@ import '../data/app_settings.dart';
 import '../data/app_store.dart';
 import '../models/important_date.dart';
 import '../utils/date_utils.dart';
-import 'cloud_sync.dart';
+import 'sync_backend.dart';
 
 /// Complete JSON backups in the same format as the native iOS app
 /// (`AppBackup`), so backups can be restored in either app.
@@ -92,7 +91,7 @@ class BackupService {
 
     final store = AppStore.instance;
     // Restoring replaces everything on purpose, on every synced device too.
-    CloudSync.instance.allowBulkDeleteOnce();
+    Sync.state.allowBulkDeleteOnce();
     await store.replaceAll(
       dates: dates,
       items: names(json['items']),

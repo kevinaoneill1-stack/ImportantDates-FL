@@ -15,6 +15,7 @@ import '../data/app_store.dart';
 import '../firebase_options.dart';
 import '../models/important_date.dart';
 import 'notification_service.dart';
+import 'sync_backend.dart';
 
 /// Two-way sync of all Important Dates data through Firebase (Cloud
 /// Firestore), so the app on iPhone, iPad, Mac and Android shares one set of
@@ -42,7 +43,7 @@ import 'notification_service.dart';
 ///   everything again;
 /// * deleting more than 10 records and more than half of everything at once
 ///   is blocked, unless the user did it on purpose (Delete All Data, Restore).
-class CloudSync extends ChangeNotifier {
+class CloudSync extends ChangeNotifier implements SyncState {
   CloudSync._();
   static final CloudSync instance = CloudSync._();
 
@@ -52,6 +53,7 @@ class CloudSync extends ChangeNotifier {
   bool configured = false;
   String setupError = '';
   User? user;
+  @override
   bool running = false;
   bool busy = false;
   String status = '';
@@ -85,6 +87,21 @@ class CloudSync extends ChangeNotifier {
   bool _applyingRemote = false;
 
   bool get enabled => _settings.cloudSyncEnabled;
+
+  @override
+  bool get isSyncOn => configured && user != null && enabled;
+
+  @override
+  String get statusSummary => !configured
+      ? 'Cloud Sync is not set up yet'
+      : user == null
+          ? 'Not signed in – local device storage'
+          : enabled
+              ? (status.isEmpty ? 'Starting…' : status)
+              : 'Sync is off – local device storage';
+
+  @override
+  String? get accountLabel => user?.email;
   FirebaseFirestore get _db => FirebaseFirestore.instance;
   CollectionReference<Map<String, dynamic>> _col(String uid, String c) =>
       _db.collection('users').doc(uid).collection(c);
@@ -378,6 +395,7 @@ class CloudSync extends ChangeNotifier {
 
   /// Lets the next push delete many records at once. Called by deliberate
   /// bulk changes (Delete All Data, Restore Backup) before they run.
+  @override
   void allowBulkDeleteOnce() => _allowBulkDelete = true;
 
   /// Sends every new, changed or deleted record to the cloud.

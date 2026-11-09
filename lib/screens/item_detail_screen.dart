@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../data/app_store.dart';
 import '../models/important_date.dart';
-import '../services/attachment_sync.dart';
 import '../services/file_actions.dart';
+import '../services/sync_backend.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
@@ -174,20 +174,20 @@ class ItemDetailScreen extends StatelessWidget {
 
   Widget _attachmentRow(BuildContext context, ImportantDate item, ItemAttachment a) {
     final t = Theme.of(context).textTheme;
-    final sync = AttachmentSync.instance;
+    final sync = Sync.attachments;
     return ListenableBuilder(
       listenable: sync,
       builder: (context, _) => _attachmentTile(context, t, item, a, sync),
     );
   }
 
-  Widget _attachmentTile(BuildContext context, TextTheme t, ImportantDate item, ItemAttachment a, AttachmentSync sync) {
+  Widget _attachmentTile(BuildContext context, TextTheme t, ImportantDate item, ItemAttachment a, AttachmentCloud sync) {
     final onDevice = sync.isOnDevice(a);
     final status = sync.downloading.contains(a.id)
         ? 'Downloading…'
-        : !onDevice && a.cloudDocId != null
+        : !onDevice && sync.isInCloud(a)
             ? 'In the cloud – tap to download'
-            : a.cloudDocId != null
+            : sync.isInCloud(a)
                 ? 'On this device and in the cloud'
                 : null;
     return Padding(
@@ -214,7 +214,7 @@ class ItemDetailScreen extends StatelessWidget {
               ),
               if (sync.downloading.contains(a.id))
                 const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-              else if (!onDevice && a.cloudDocId != null)
+              else if (!onDevice && sync.isInCloud(a))
                 const Icon(Icons.cloud_download_outlined, size: 20),
               IconButton(
                 tooltip: 'Remove',
@@ -247,7 +247,7 @@ class ItemDetailScreen extends StatelessWidget {
   Future<void> _preview(BuildContext context, ItemAttachment a) async {
     final File file;
     try {
-      final local = await AttachmentSync.instance.ensureLocal(a);
+      final local = await Sync.attachments.ensureLocal(a);
       if (local == null) {
         if (context.mounted) await showMessage(context, 'File Not Available', 'This file is not on this device.');
         return;

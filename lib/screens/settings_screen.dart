@@ -7,15 +7,15 @@ import '../data/app_settings.dart';
 import '../data/app_store.dart';
 import '../data/developer_access.dart';
 import '../services/backup_service.dart';
-import '../services/cloud_sync.dart';
 import '../services/file_actions.dart';
+import '../services/sync_backend.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
-import 'cloud_sync_screen.dart';
 import 'developer_controls_screen.dart';
 import 'home_screen.dart' show HomeHero;
 import 'passcode_screens.dart';
+import 'sync_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -324,21 +324,15 @@ class _StorageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: CloudSync.instance,
+      listenable: Sync.state,
       builder: (context, _) {
-        final sync = CloudSync.instance;
-        final on = sync.configured && sync.user != null && sync.enabled;
+        final sync = Sync.state;
+        final on = sync.isSyncOn;
         final color = on ? AppTheme.success : AppTheme.warning;
-        final subtitle = !sync.configured
-            ? 'Cloud Sync is not set up yet'
-            : sync.user == null
-                ? 'Not signed in – local device storage'
-                : sync.enabled
-                    ? (sync.status.isEmpty ? 'Starting…' : sync.status)
-                    : 'Sync is off – local device storage';
+        final subtitle = sync.statusSummary;
         return AppCard(
           accent: color,
-          onTap: () => pushPage(context, const CloudSyncScreen()),
+          onTap: () => pushPage(context, syncScreen()),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             SectionTitle(
               title: 'Data & Sync Status',
@@ -351,7 +345,7 @@ class _StorageCard extends StatelessWidget {
               Icon(on ? Icons.cloud_done_rounded : Icons.cloud_off_rounded, color: color),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(on ? 'Cloud Sync On${sync.user?.email == null ? '' : ' (${sync.user!.email})'}' : 'Using Local Storage',
+                child: Text(on ? 'Cloud Sync On${sync.accountLabel == null ? '' : ' (${sync.accountLabel})'}' : 'Using Local Storage',
                     style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ]),
@@ -393,7 +387,7 @@ class _DeleteAllCard extends StatelessWidget {
         context,
         title: 'Delete all app data?',
         message: 'This permanently removes every saved date, attachment, reusable item and name. '
-            '${CloudSync.instance.running ? 'Cloud Sync is on, so they are also removed from the cloud and your other devices. ' : ''}'
+            '${Sync.state.running ? 'Cloud Sync is on, so they are also removed from the cloud and your other devices. ' : ''}'
             'Create a backup first if you may need this information again.',
         confirmLabel: 'Continue',
       );
@@ -404,7 +398,7 @@ class _DeleteAllCard extends StatelessWidget {
       }
       try {
         // Deliberate: also delete everything from the cloud and other devices.
-        CloudSync.instance.allowBulkDeleteOnce();
+        Sync.state.allowBulkDeleteOnce();
         await AppStore.instance.deleteAll();
         if (context.mounted) {
           await showMessage(context, 'All Data Deleted', 'All saved dates, attachments, items and names have been permanently deleted.');

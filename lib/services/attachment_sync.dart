@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:document_store/document_store.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import '../data/app_store.dart';
 import '../models/important_date.dart';
 import 'cloud_sync.dart';
+import 'sync_backend.dart';
 
 /// Keeps attachment files (PDFs, photos, scans) in the shared DocumentStore,
 /// so the files themselves are on every device, not just the one that added
@@ -29,7 +29,7 @@ import 'cloud_sync.dart';
 ///
 /// Only active while Cloud Sync is set up, switched on and signed in.
 /// Otherwise attachments work exactly as before, on this device only.
-class AttachmentSync extends ChangeNotifier {
+class AttachmentSync extends ChangeNotifier implements AttachmentCloud {
   AttachmentSync._();
   static final AttachmentSync instance = AttachmentSync._();
 
@@ -55,6 +55,7 @@ class AttachmentSync extends ChangeNotifier {
   final Set<String> _skipUpload = {};
 
   /// Attachment ids currently downloading (for progress indicators).
+  @override
   final Set<String> downloading = {};
 
   String lastError = '';
@@ -236,6 +237,7 @@ class AttachmentSync extends ChangeNotifier {
   /// The attachment's file on this device, downloading it from the cloud
   /// first if needed. Returns null when it is not on this device and has no
   /// cloud copy. Throws [DocumentStoreException] when the download fails.
+  @override
   Future<File?> ensureLocal(ItemAttachment a) async {
     final local = _store.attachmentFile(a.id);
     if (await local.exists()) return local;
@@ -256,6 +258,10 @@ class AttachmentSync extends ChangeNotifier {
     }
   }
 
+  @override
+  bool isInCloud(ItemAttachment a) => a.cloudDocId != null;
+
+  @override
   bool isOnDevice(ItemAttachment a) => _store.attachmentFile(a.id).existsSync();
 
   /// Downloads every cloud attachment of [date] not on this device yet.
@@ -289,6 +295,7 @@ class AttachmentSync extends ChangeNotifier {
   }
 
   /// Downloads every cloud attachment (for a complete backup on this device).
+  @override
   Future<(int, int)> downloadAll() async {
     var ok = 0, failed = 0;
     for (final d in [..._store.dates]) {
@@ -299,6 +306,7 @@ class AttachmentSync extends ChangeNotifier {
     return (ok, failed);
   }
 
+  @override
   int get cloudOnlyCount =>
       _store.dates.fold(0, (n, d) => n + d.attachments.where((a) => a.cloudDocId != null && !isOnDevice(a)).length);
 

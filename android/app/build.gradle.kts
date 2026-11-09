@@ -20,10 +20,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     defaultConfig {
         applicationId = "com.kevinaoneill.importantdates"
         // Firebase needs Android 6.0 (API 23) or newer.
@@ -32,6 +28,27 @@ android {
         // Version 3 / Build 61 come from pubspec.yaml (version: 3.0.0+61).
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    // Two editions from one code base (see FLAVORS_SETUP.md):
+    //   personal: Firebase Cloud Sync, com.kevinaoneill.importantdates.personal
+    //   public:   Google Drive sync, com.kevinaoneill.importantdates (Play Store)
+    // Build with e.g. flutter run --flavor personal -t lib/main_personal.dart
+    flavorDimensions += "edition"
+    productFlavors {
+        create("personal") {
+            dimension = "edition"
+            applicationIdSuffix = ".personal"
+            resValue("string", "app_name", "Important Dates Personal")
+        }
+        create("public") {
+            dimension = "edition"
+            resValue("string", "app_name", "Important Dates")
+        }
+    }
+
+    buildFeatures {
+        resValues = true
     }
 
     buildTypes {
@@ -48,4 +65,10 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }

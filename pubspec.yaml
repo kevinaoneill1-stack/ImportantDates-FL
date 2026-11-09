@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 65 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+65
+# Version 3, Build 66 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+66
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
@@ -28,6 +28,10 @@ dependencies:
   firebase_auth: ">=5.0.0 <8.0.0"
   cloud_firestore: ">=5.0.0 <8.0.0"
   firebase_storage: ">=12.0.0 <16.0.0"
+  # Google Drive sync for the public edition (flavor "public").
+  google_sign_in: ^7.1.0
+  googleapis: ">=13.2.0 <17.0.0"
+  http: ^1.2.2
   # Shared document storage used by all my apps (Flutter Apps/document-store).
   document_store:
     path: ../../document-store/packages/document_store

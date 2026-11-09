@@ -2,13 +2,13 @@
 ///
 /// The build number goes up by one for every change set: run
 /// `dart run tool/bump_build.dart` from the project root, which updates this
-/// file, pubspec.yaml and README.md together (pubspec.yaml: 3.0.0+65).
+/// file, pubspec.yaml and README.md together (pubspec.yaml: 3.0.0+66).
 class AppInfo {
   static const String appName = 'Important Dates';
   static const String version = '3';
 
   /// Numeric build number - must match the number after "+" in pubspec.yaml.
-  static const String build = '65';
+  static const String build = '66';
 
   /// Marks this as the Flutter build. Shown in the app only: Apple and Google
   /// require the real build number to be digits, so letters can't go there.

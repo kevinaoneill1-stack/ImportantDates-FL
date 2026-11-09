@@ -1,0 +1,5 @@
+// Public edition (Google Drive sync). See FLAVORS_SETUP.md.
+APP_DISPLAY_NAME = Important Dates
+// The "iOS URL scheme" of the iOS OAuth client in GoogleDriveConfig.iosClientId,
+// e.g. com.googleusercontent.apps.1234567890-abc123def456
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.REPLACE-ME

@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../data/app_settings.dart';
-import '../services/attachment_sync.dart';
 import '../services/backup_service.dart';
-import '../services/cloud_sync.dart';
 import '../services/file_actions.dart';
+import '../services/sync_backend.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
@@ -23,7 +22,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
   bool _busy = false;
 
   /// Extra sentence for restore confirmations while Cloud Sync is on.
-  String get _syncNote => CloudSync.instance.running
+  String get _syncNote => Sync.state.running
       ? '\n\nCloud Sync is on, so the restored data also replaces the data on your other signed-in devices.'
       : '';
 
@@ -59,7 +58,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
         try {
           // Attachments that are only in the cloud are downloaded first, so
           // the exported file is complete (and restorable in the iOS app).
-          final sync = AttachmentSync.instance;
+          final sync = Sync.attachments;
           if (sync.cloudOnlyCount > 0) {
             final (_, failed) = await sync.downloadAll();
             if (failed > 0 && mounted) {
