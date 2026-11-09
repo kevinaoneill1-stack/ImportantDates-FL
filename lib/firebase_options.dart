@@ -48,27 +48,25 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBWz7exMiZ8t3Gq9LAAg3yqwAt_5A3ZaT4',
-    appId: '1:461991683844:android:a22565ddb4ae43097b9251',
+    appId: '1:461991683844:android:0ed4eaf30dcedf8d7b9251',
     messagingSenderId: '461991683844',
     projectId: 'importantdates-4b03a',
     storageBucket: 'importantdates-4b03a.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDspHoOjMs5uahWd3rcuhfyidovbQbpAX4',
-    appId: '1:461991683844:ios:f73ecf81ca5c9e677b9251',
+    appId: '1:461991683844:ios:1fb62e15018b241f7b9251',
     messagingSenderId: '461991683844',
     projectId: 'importantdates-4b03a',
     storageBucket: 'importantdates-4b03a.firebasestorage.app',
-    iosBundleId: 'com.kevinaoneill.ImportantDates',
+    iosBundleId: 'com.kevinaoneill.ImportantDates.personal',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDspHoOjMs5uahWd3rcuhfyidovbQbpAX4',
-    appId: '1:461991683844:ios:f73ecf81ca5c9e677b9251',
+    appId: '1:461991683844:ios:1fb62e15018b241f7b9251',
     messagingSenderId: '461991683844',
     projectId: 'importantdates-4b03a',
     storageBucket: 'importantdates-4b03a.firebasestorage.app',
-    iosBundleId: 'com.kevinaoneill.ImportantDates',
+    iosBundleId: 'com.kevinaoneill.ImportantDates.personal',
   );
 }

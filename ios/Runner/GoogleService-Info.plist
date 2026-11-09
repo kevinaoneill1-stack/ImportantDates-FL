@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.kevinaoneill.ImportantDates</string>
+	<string>com.kevinaoneill.ImportantDates.personal</string>
 	<key>PROJECT_ID</key>
 	<string>importantdates-4b03a</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:461991683844:ios:f73ecf81ca5c9e677b9251</string>
+	<string>1:461991683844:ios:1fb62e15018b241f7b9251</string>
 </dict>
 </plist>
