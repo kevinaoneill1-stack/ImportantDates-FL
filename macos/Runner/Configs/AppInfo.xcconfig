@@ -15,8 +15,4 @@ PRODUCT_COPYRIGHT = Copyright © 2026 Kevin O'Neill. All rights reserved.
 
 // Public edition: the "iOS URL scheme" of the iOS OAuth client in
 // GoogleDriveConfig.iosClientId (com.googleusercontent.apps.…). See FLAVORS_SETUP.md.
-GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.REPLACE-ME
-
-// The public edition does not use Firebase, so its Firebase config file is
-// left out of the app bundle (AppInfo-personal.xcconfig puts it back).
-EXCLUDED_SOURCE_FILE_NAMES = GoogleService-Info.plist
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.461991683844-d5tbnv41ls4imlcvg1ubp3maa1scevhd

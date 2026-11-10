@@ -15,14 +15,14 @@ class GoogleDriveConfig {
   /// Its "iOS URL scheme" (the reversed id, `com.googleusercontent.apps.…`)
   /// must also go into GOOGLE_REVERSED_CLIENT_ID in
   /// ios/Flutter/Flavor-public.xcconfig and macos/Runner/Configs/AppInfo.xcconfig.
-  static const String iosClientId = '';
+  static const String iosClientId = '461991683844-d5tbnv41ls4imlcvg1ubp3maa1scevhd.apps.googleusercontent.com';
 
   /// OAuth client of type **Web application** (Android needs it as the
   /// "server client id"). Google sign-in on Android also needs an OAuth
   /// client of type **Android** for package `com.kevinaoneill.importantdates`
   /// with your SHA-1 fingerprints; that one is matched automatically and is
   /// not entered here.
-  static const String webClientId = '';
+  static const String webClientId = '461991683844-1nfaerr80il31vgsbflq5hnvbu7675bk.apps.googleusercontent.com';
 
   static bool get isConfigured =>
       Platform.isAndroid ? webClientId.isNotEmpty : (Platform.isIOS || Platform.isMacOS) && iosClientId.isNotEmpty;
