@@ -137,7 +137,9 @@ class _HomeAppearanceCard extends StatefulWidget {
 }
 
 class _HomeAppearanceCardState extends State<_HomeAppearanceCard> {
-  late final TextEditingController _title = TextEditingController(text: AppSettings.instance.homeTitle);
+  late final TextEditingController _title = TextEditingController(
+    text: AppSettings.instance.hasHomeTitle ? AppSettings.instance.homeTitle : '',
+  );
   bool _loading = false;
 
   @override
@@ -175,7 +177,7 @@ class _HomeAppearanceCardState extends State<_HomeAppearanceCard> {
         TextField(
           controller: _title,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(hintText: 'Enter a name or title'),
+          decoration: const InputDecoration(hintText: AppSettings.defaultHomeTitle),
           onChanged: (v) => s.homeTitle = v,
         ),
         const SizedBox(height: 6),
@@ -241,10 +243,10 @@ class _ToolsShortcutsCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SectionTitle(title: 'Tools Shortcuts', subtitle: 'Choose the optional shortcuts shown on the Tools page', icon: Icons.bolt_rounded),
         const SizedBox(height: 6),
-        sw('Search', s.showSearch, (v) => s.showSearch = v),
         sw('Timeline', s.showTimeline, (v) => s.showTimeline = v),
         sw('Reports', s.showReports, (v) => s.showReports = v),
         sw('Statistics', s.showStatistics, (v) => s.showStatistics = v),
+        sw('Search', s.showSearch, (v) => s.showSearch = v),
       ]),
     );
   }

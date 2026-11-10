@@ -1,5 +1,14 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.67FL
+- Developer codes are no longer in the source code. They come from the git-ignored `dev_codes.json` at build time
+  (`--dart-define-from-file=dev_codes.json`, template `dev_codes.example.json`); without it developer access is off.
+  See FLAVORS_SETUP.md.
+- Home page title defaults to "Your Name here". Tap the title on Home to enter or change it (also in
+  Manage › App Settings › Home Appearance). The placeholder is never synced to other devices.
+- Help & Instructions opens automatically the first time the app is opened (not for existing installs with dates).
+- Tools & Reports: Search Everything moved to the bottom of the list (and of the Tools Shortcuts switches).
+
 ## 3.0.66FL
 - Two editions from one code base (build flavors, see FLAVORS_SETUP.md):
   - **personal** – Firebase Cloud Sync as before; bundle id `com.kevinaoneill.ImportantDates.personal`

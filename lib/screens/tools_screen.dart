@@ -28,14 +28,6 @@ class ToolsScreen extends StatelessWidget {
               subtitle: 'Search, review and report on your important dates',
               icon: Icons.grid_view_rounded,
             ),
-            if (s.showSearch)
-              QuickActionButton(
-                title: 'Search Everything',
-                icon: Icons.search_rounded,
-                color: Colors.indigo,
-                subtitle: 'Find items, people, notes and dates',
-                onTap: () => pushPage(context, const GlobalSearchScreen()),
-              ),
             if (s.showTimeline)
               QuickActionButton(
                 title: 'Timeline',
@@ -59,6 +51,14 @@ class ToolsScreen extends StatelessWidget {
                 color: Colors.green,
                 subtitle: 'Review counts, status and backup information',
                 onTap: () => pushPage(context, const StatisticsScreen()),
+              ),
+            if (s.showSearch)
+              QuickActionButton(
+                title: 'Search Everything',
+                icon: Icons.search_rounded,
+                color: Colors.indigo,
+                subtitle: 'Find items, people, notes and dates',
+                onTap: () => pushPage(context, const GlobalSearchScreen()),
               ),
             if (!s.showSearch && !s.showTimeline && !s.showReports && !s.showStatistics)
               const AppCard(

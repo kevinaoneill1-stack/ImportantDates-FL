@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../data/app_settings.dart';
+import '../data/app_store.dart';
 import 'all_items_screen.dart';
 import 'calendar_screen.dart';
 import 'home_screen.dart';
+import 'info_screens.dart';
 import 'management_screen.dart';
 import 'tools_screen.dart';
 
@@ -17,6 +20,24 @@ class MainTabs extends StatefulWidget {
 class _MainTabsState extends State<MainTabs> {
   int _index = 0;
   final _keys = List.generate(5, (_) => GlobalKey<NavigatorState>());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showHelpOnFirstLaunch());
+  }
+
+  /// The first time the app opens, Help & Instructions is shown on top of
+  /// Home (Back returns to Home). Existing installs that already hold dates
+  /// are not new users, so they are only marked as done.
+  void _showHelpOnFirstLaunch() {
+    final s = AppSettings.instance;
+    if (s.firstLaunchHelpShown) return;
+    s.firstLaunchHelpShown = true;
+    if (AppStore.instance.dates.isNotEmpty) return;
+    if (!mounted) return;
+    _keys[0].currentState?.push(MaterialPageRoute(builder: (_) => const HelpScreen()));
+  }
 
   static const _destinations = [
     (Icons.home_rounded, 'Home'),

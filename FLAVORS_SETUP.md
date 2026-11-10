@@ -32,6 +32,27 @@ In Android Studio: Run › Edit Configurations › add two Flutter configuration
 Dart entrypoint `lib/main_personal.dart` / `lib/main_public.dart`, Build flavor
 `personal` / `public`. In Xcode: pick the **personal** or **public** scheme.
 
+## Developer access codes (kept out of git)
+
+Developer Controls (tap **App Information** in Manage › App Settings) and the
+developer passcode override only work in Debug and Profile builds, and only when
+the build is given the codes. The codes are not in the source code, because the
+repository is public.
+
+1. Copy `dev_codes.example.json` to `dev_codes.json` in the project root (it is
+   git-ignored) and fill in `DEV_OVERRIDE_PASSCODE` and `DEV_CONTROLS_PASSCODE`.
+2. Add `--dart-define-from-file=dev_codes.json` to development runs, e.g.
+
+```bash
+flutter run --flavor personal -t lib/main_personal.dart --dart-define-from-file=dev_codes.json
+```
+
+In Android Studio, put `--dart-define-from-file=dev_codes.json` in the run
+configuration's *Additional run args*. Builds started from Xcode, or without the
+file, simply have no developer access. Release builds (TestFlight, App Store, Play)
+never have it unless `DEV_FORCE_ENABLE_IN_RELEASE` is `"true"` in the file for
+that build — set it back to `"false"` afterwards.
+
 How it is wired (already done in the project):
 
 * Dart: `lib/config/flavor.dart` (`Flavor.usesGoogleDrive`), `lib/main.dart`

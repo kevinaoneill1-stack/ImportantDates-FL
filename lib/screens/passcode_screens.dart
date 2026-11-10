@@ -207,5 +207,5 @@ Future<bool> verifyDeveloperPasscode(BuildContext context) => showPasscodePrompt
       footer: 'Enter the developer passcode to open Developer Controls.',
       actionLabel: 'Open Developer Controls',
       errorText: 'Incorrect developer passcode.',
-      verify: (v) => DeveloperAccess.isEnabled && v == DeveloperAccess.controlsPasscode,
+      verify: DeveloperAccess.matchesControlsPasscode,
     );

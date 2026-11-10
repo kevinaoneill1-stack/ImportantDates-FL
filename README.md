@@ -1,6 +1,6 @@
 # Important Dates — Flutter edition
 
-**Version 3.0.66FL** (Version 3 • Build 66FL)
+**Version 3.0.67FL** (Version 3 • Build 67FL)
 
 A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
 Mac and Android** from one code base. It replaces the native app on the App
@@ -130,7 +130,7 @@ The folder name no longer changes between builds, so Xcode caches keep working.
 | Backup & Restore (JSON incl. attachments & Home appearance) | ✅ **same file format as the iOS app — backups restore in either app** |
 | Automatic backups (daily…monthly, change-triggered, keep 10) | ✅ plus a copy for each of the last 7 days; never replaced by an empty data set |
 | App passcode lock, Delete-All passcode | ✅ |
-| Launch disclaimer, Developer Controls (707 / 1028) | ✅ Debug & Profile builds only (see `lib/data/developer_access.dart`) |
+| Launch disclaimer, Developer Controls | ✅ Debug & Profile builds only, codes from the git-ignored `dev_codes.json` (see FLAVORS_SETUP.md) |
 | SwiftData + iCloud/CloudKit sync | ✅ **Cloud Sync through Firebase** (from 3.0.64FL), including attachment files |
 | Home Screen widget, Apple Watch app | ❌ Not included (native-only targets) |
 

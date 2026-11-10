@@ -30,7 +30,9 @@ class AppSettings extends ChangeNotifier {
 
   final SharedPreferences _prefs;
 
-  static const defaultHomeTitle = 'Laura & Kevin';
+  /// Shown on the Home page until the user enters their own title
+  /// (Manage › App Settings › Home Appearance, or tap the title on Home).
+  static const defaultHomeTitle = 'Your Name here';
 
   bool _b(String k, bool d) => _prefs.getBool(k) ?? d;
   String _s(String k, String d) => _prefs.getString(k) ?? d;
@@ -113,8 +115,10 @@ class AppSettings extends ChangeNotifier {
 
   /// Preferences that follow the account to every device. Passcodes, backup
   /// settings and the disclaimer stay on each device, as in the iOS app.
+  /// The Home title is only sent once the user has set one, so a new device
+  /// never replaces a real title on other devices with the placeholder.
   Map<String, dynamic> toSyncValues() => {
-        'homeTitle': homeTitle,
+        if (hasHomeTitle) 'homeTitle': homeTitle,
         'homeImageDisplayMode': homeDisplayMode.rawValue,
         'homeImageBrightness': homeBrightness,
         'homeImageBlur': homeBlur,
@@ -142,6 +146,10 @@ class AppSettings extends ChangeNotifier {
     await put('showHomeStatistics', m['showHomeStatistics'] as bool?);
     notifyListeners();
   }
+
+  // First launch: Help & Instructions is shown once.
+  bool get firstLaunchHelpShown => _b('firstLaunchHelpShown', false);
+  set firstLaunchHelpShown(bool v) => _set('firstLaunchHelpShown', v);
 
   // Disclaimer
   bool get developerDisclaimerEnabled => _b('developerDisclaimerEnabled', true);

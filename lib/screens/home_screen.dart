@@ -79,6 +79,32 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+/// Lets the user enter or change the Home page title (also editable in
+/// Manage › App Settings › Home Appearance).
+Future<void> editHomeTitle(BuildContext context) async {
+  final s = AppSettings.instance;
+  final controller = TextEditingController(text: s.hasHomeTitle ? s.homeTitle : '');
+  final result = await showDialog<String>(
+    context: context,
+    builder: (c) => AlertDialog(
+      title: const Text('Home Page Title'),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        textCapitalization: TextCapitalization.words,
+        decoration: const InputDecoration(hintText: AppSettings.defaultHomeTitle),
+        onSubmitted: (v) => Navigator.of(c).pop(v),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(c).pop(), child: const Text('Cancel')),
+        FilledButton(onPressed: () => Navigator.of(c).pop(controller.text), child: const Text('Save')),
+      ],
+    ),
+  );
+  // The controller is not disposed here: the dialog may still be animating out.
+  if (result != null) s.homeTitle = result.trim();
+}
+
 /// The photo hero card. Reused by the Home Appearance settings preview.
 class HomeHero extends StatefulWidget {
   const HomeHero({super.key, this.height = 190, this.showText = true});
@@ -157,8 +183,24 @@ class _HomeHeroState extends State<HomeHero> {
                   right: 20,
                   bottom: 20,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(s.displayHomeTitle,
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.82), fontSize: 14, fontWeight: FontWeight.w600)),
+                    // Tap the title to enter or change it.
+                    InkWell(
+                      onTap: () => editHomeTitle(context),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          Flexible(
+                            child: Text(s.displayHomeTitle,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.82), fontSize: 14, fontWeight: FontWeight.w600)),
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(Icons.edit_rounded, size: 14, color: Colors.white.withValues(alpha: 0.7)),
+                        ]),
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     const Text('Important Dates', style: TextStyle(color: Colors.white, fontSize: 31, fontWeight: FontWeight.bold)),
                     Text('Everything important, all in one place',

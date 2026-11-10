@@ -57,3 +57,6 @@ macos/Pods/
 macos/Flutter/ephemeral/
 android/.gradle/
 android/local.properties
+
+# Developer access codes (passed with --dart-define-from-file, never committed)
+dev_codes.json
