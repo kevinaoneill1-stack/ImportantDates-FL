@@ -5,6 +5,3 @@ PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.personal
 
 // Not used by this edition; Info.plist needs some URL scheme value.
 GOOGLE_REVERSED_CLIENT_ID = com.kevinaoneill.ImportantDates.personal
-
-// Firebase Cloud Sync: keep GoogleService-Info.plist (excluded for public).
-EXCLUDED_SOURCE_FILE_NAMES =

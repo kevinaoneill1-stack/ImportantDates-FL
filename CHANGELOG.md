@@ -1,5 +1,9 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.69FL
+- Fix: no keyboard anywhere in the public iOS app. Removed `EXCLUDED_SOURCE_FILE_NAMES` (which left
+  GoogleService-Info.plist out of public iOS/macOS builds); the file is back in both editions, unused by public.
+
 ## 3.0.68FL
 - **App lock.** Passcodes are stored as salted, hashed values in the keychain / Android keystore
   (flutter_secure_storage) instead of plain text; existing passcodes move over on first start. The app locks again
