@@ -1,5 +1,20 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.68FL
+- **App lock.** Passcodes are stored as salted, hashed values in the keychain / Android keystore
+  (flutter_secure_storage) instead of plain text; existing passcodes move over on first start. The app locks again
+  after a minute in the background (the screens underneath are kept). After 5 wrong passcodes, entry waits 1, 2,
+  4 … up to 60 minutes (app lock and Delete All). Optional Face ID / Touch ID / fingerprint unlock in App Settings
+  (local_auth; Android MainActivity is now a FlutterFragmentActivity with AppCompat themes).
+- **Builds anywhere.** `document_store` comes from its GitHub repo instead of `../../document-store`;
+  `pubspec_overrides.example.yaml` switches back to a local copy. GitHub Actions workflow runs analyze and tests
+  once the DOCUMENT_STORE_TOKEN secret is added.
+- **Sync tests.** The Cloud Sync and Drive Sync record rules (bulk-delete guard, deletes only for records that were
+  on the device, conflict handling, tombstones) moved into `lib/services/sync_rules.dart`, unchanged, with tests.
+- **No silent errors.** Problems the app recovers from are logged (AppLog) and listed under App Settings ›
+  Recent Problems.
+- **Public edition without Firebase config.** Its builds leave out google-services.json and GoogleService-Info.plist.
+
 ## 3.0.67FL
 - Developer codes are no longer in the source code. They come from the git-ignored `dev_codes.json` at build time
   (`--dart-define-from-file=dev_codes.json`, template `dev_codes.example.json`); without it developer access is off.

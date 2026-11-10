@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import '../data/app_store.dart';
 import '../models/important_date.dart';
+import 'app_log.dart';
 import 'cloud_sync.dart';
 import 'sync_backend.dart';
 
@@ -68,7 +69,8 @@ class AttachmentSync extends ChangeNotifier implements AttachmentCloud {
     if (!_cloud.configured || _cloud.user == null) return null;
     try {
       return _docs ??= DocumentStore(appId: appId);
-    } catch (_) {
+    } catch (e) {
+      AppLog.error('Could not open attachment cloud storage', e);
       return null;
     }
   }
@@ -320,6 +322,8 @@ class AttachmentSync extends ChangeNotifier implements AttachmentCloud {
     if (_store.dates.any((d) => d.attachments.any((o) => o.cloudDocId == id && o.id != a.id))) return;
     try {
       await docs.delete(id);
-    } catch (_) {}
+    } catch (e) {
+      AppLog.error('Could not delete an attachment from the cloud', e);
+    }
   }
 }

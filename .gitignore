@@ -60,3 +60,6 @@ android/local.properties
 
 # Developer access codes (passed with --dart-define-from-file, never committed)
 dev_codes.json
+
+# Local-only dependency overrides (see pubspec_overrides.example.yaml)
+pubspec_overrides.yaml

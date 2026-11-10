@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/google_drive_config.dart';
+import 'app_log.dart';
 
 /// Thrown when Google Drive access has to be granted again with a sign-in
 /// screen (it was revoked, or never granted on this device).
@@ -53,7 +54,9 @@ class GoogleDriveAuth {
         // possible; the result also arrives as an authentication event.
         final account = await signIn.attemptLightweightAuthentication();
         if (account != null) _setAccount(account);
-      } catch (_) {}
+      } catch (e) {
+        AppLog.error('Could not restore the Google sign-in', e);
+      }
     }
   }
 

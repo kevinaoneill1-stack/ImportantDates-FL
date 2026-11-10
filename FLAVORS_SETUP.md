@@ -53,6 +53,21 @@ file, simply have no developer access. Release builds (TestFlight, App Store, Pl
 never have it unless `DEV_FORCE_ENABLE_IN_RELEASE` is `"true"` in the file for
 that build — set it back to `"false"` afterwards.
 
+### Firebase and the public edition
+
+The public edition never starts Firebase, and its builds leave out the Firebase
+config files: Android skips `google-services.json` for the `public` flavor
+(`android/app/build.gradle.kts`), iOS and macOS exclude `GoogleService-Info.plist`
+(`EXCLUDED_SOURCE_FILE_NAMES` in `ios/Flutter/Flavor-public.xcconfig` and
+`macos/Runner/Configs/AppInfo.xcconfig`). Firebase itself is started from
+`lib/firebase_options.dart`, so the personal edition does not depend on those files.
+
+The Firebase SDK code is still compiled into the public app: Flutter links every
+plugin in pubspec.yaml into every flavor, and has no per-flavor dependencies. It
+is never called, so it sends nothing. Removing it completely would mean splitting
+the project into a shared package plus two small apps, each with its own
+pubspec.yaml.
+
 How it is wired (already done in the project):
 
 * Dart: `lib/config/flavor.dart` (`Flavor.usesGoogleDrive`), `lib/main.dart`

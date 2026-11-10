@@ -1,0 +1,5 @@
+# Copy to pubspec_overrides.yaml (git-ignored) to build against your local
+# document-store folder instead of the GitHub copy, e.g. while changing it.
+dependency_overrides:
+  document_store:
+    path: ../../document-store/packages/document_store

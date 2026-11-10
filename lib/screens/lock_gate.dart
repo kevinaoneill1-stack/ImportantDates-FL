@@ -3,13 +3,20 @@ import 'package:flutter/material.dart';
 import '../app_info.dart';
 import '../data/app_settings.dart';
 import '../data/developer_access.dart';
+import '../data/passcode_store.dart';
+import '../services/app_log.dart';
 import '../services/backup_service.dart';
+import '../services/biometric_unlock.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import 'disclaimer_screen.dart';
 import 'main_tabs.dart';
 
 /// Launch flow: mandatory disclaimer -> optional passcode lock -> tabs.
+///
+/// With an app passcode, the app also locks again after it has been in the
+/// background for [relockAfter]. The lock screen then covers the tabs, which
+/// stay alive underneath, so nothing the user was doing is lost.
 class LockGate extends StatefulWidget {
   const LockGate({super.key});
   @override
@@ -19,8 +26,14 @@ class LockGate extends StatefulWidget {
 class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
   final _settings = AppSettings.instance;
   final _controller = TextEditingController();
+  static const relockAfter = Duration(minutes: 1);
+
   bool _unlocked = false;
+  bool _everUnlocked = false;
   bool _showError = false;
+  String _errorText = 'Incorrect passcode';
+  DateTime? _backgroundedAt;
+  bool _biometricInProgress = false;
   bool _disclaimerAcknowledgedThisLaunch = false;
   bool _lastDisclaimerEnabled = AppSettings.instance.developerDisclaimerEnabled;
 
@@ -30,6 +43,7 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _settings.addListener(_onSettingsChanged);
     _runAutomaticBackupIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _offerBiometric());
   }
 
   @override
@@ -50,17 +64,61 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
     if (mounted) setState(() {});
   }
 
+  bool get _passcodeActive => _settings.passcodeEnabled && PasscodeStore.instance.has(PasscodeKind.app);
+
+  bool get _locked => _passcodeActive && !_unlocked;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _runAutomaticBackupIfNeeded();
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        // Face ID itself briefly sends the app to the background on some
+        // devices; that must not count as leaving the app.
+        if (!_biometricInProgress) _backgroundedAt ??= DateTime.now();
+      case AppLifecycleState.resumed:
+        final away = _backgroundedAt;
+        _backgroundedAt = null;
+        if (away != null && _passcodeActive && _unlocked && DateTime.now().difference(away) >= relockAfter) {
+          setState(() {
+            _unlocked = false;
+            _showError = false;
+            _controller.clear();
+          });
+          _offerBiometric();
+        }
+        _runAutomaticBackupIfNeeded();
+      default:
+        break;
+    }
   }
 
   Future<void> _runAutomaticBackupIfNeeded() async {
     try {
       await BackupService.performIfNeeded();
-    } catch (e) {
-      debugPrint('Automatic backup failed: $e');
+    } catch (e, st) {
+      AppLog.error('Automatic backup failed', e, st);
     }
+  }
+
+  /// Shows Face ID / fingerprint straight away when the lock screen appears.
+  Future<void> _offerBiometric() async {
+    if (!mounted || !_locked || _shouldShowDisclaimer || !_settings.biometricUnlockEnabled || _biometricInProgress) return;
+    if (!await BiometricUnlock.isAvailable()) return;
+    _biometricInProgress = true;
+    final ok = await BiometricUnlock.authenticate();
+    _biometricInProgress = false;
+    if (ok && mounted) {
+      await PasscodeStore.instance.recordAttempt(success: true);
+      setState(_markUnlocked);
+    }
+  }
+
+  void _markUnlocked() {
+    _showError = false;
+    _unlocked = true;
+    _everUnlocked = true;
+    _controller.clear();
   }
 
   bool get _shouldShowDisclaimer {
@@ -78,14 +136,30 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
         _settings.disclaimerAcknowledgedVersion = AppInfo.version;
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _offerBiometric());
   }
 
-  void _unlock() {
+  Future<void> _unlock() async {
+    final store = PasscodeStore.instance;
+    final entered = _controller.text;
+    final waitUntil = store.lockedUntil;
+    if (waitUntil != null && !DeveloperAccess.isOverride(entered)) {
+      setState(() {
+        _errorText = 'Too many wrong passcodes. ${PasscodeStore.waitText(waitUntil)}';
+        _showError = true;
+        _controller.clear();
+      });
+      return;
+    }
+    final ok = DeveloperAccess.matchesUserOrDeveloperPasscode(entered, PasscodeKind.app);
+    await store.recordAttempt(success: ok);
+    if (!mounted) return;
     setState(() {
-      if (DeveloperAccess.matchesUserOrDeveloperPasscode(_controller.text, _settings.appPasscode)) {
-        _showError = false;
-        _unlocked = true;
+      if (ok) {
+        _markUnlocked();
       } else {
+        final until = store.lockedUntil;
+        _errorText = until == null ? 'Incorrect passcode' : 'Incorrect passcode. ${PasscodeStore.waitText(until)}';
         _showError = true;
         _controller.clear();
       }
@@ -95,8 +169,20 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (_shouldShowDisclaimer) return DisclaimerScreen(onAcknowledge: _acknowledge);
-    if (!_settings.passcodeEnabled || _settings.appPasscode.isEmpty || _unlocked) return const MainTabs();
-    return _lockScreen(context);
+    if (!_locked) {
+      // No passcode (or already unlocked): count as unlocked, so turning the
+      // passcode on in App Settings does not lock the app on the spot.
+      _unlocked = true;
+      _everUnlocked = true;
+      return const _Tabs();
+    }
+    // Locked before the first unlock: the tabs are not built at all.
+    if (!_everUnlocked) return _lockScreen(context);
+    // Locked again after the background: cover the tabs, keep them alive.
+    return Stack(children: [
+      const Offstage(child: _Tabs()),
+      Positioned.fill(child: _lockScreen(context)),
+    ]);
   }
 
   Widget _lockScreen(BuildContext context) {
@@ -149,12 +235,24 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
                       child: const Text('Unlock', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                     ),
                   ),
+                  if (_settings.biometricUnlockEnabled) ...[
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _offerBiometric,
+                      icon: const Icon(Icons.fingerprint_rounded),
+                      label: const Text('Use Face ID / Fingerprint'),
+                    ),
+                  ],
                   if (_showError) ...[
                     const SizedBox(height: 16),
-                    const Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.error_rounded, color: AppTheme.danger, size: 18),
-                      SizedBox(width: 6),
-                      Text('Incorrect passcode', style: TextStyle(color: AppTheme.danger, fontWeight: FontWeight.w600)),
+                    Row(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.error_rounded, color: AppTheme.danger, size: 18),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(_errorText,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: AppTheme.danger, fontWeight: FontWeight.w600)),
+                      ),
                     ]),
                   ],
                 ]),
@@ -165,4 +263,13 @@ class _LockGateState extends State<LockGate> with WidgetsBindingObserver {
       ),
     );
   }
+}
+
+/// The tabs, always under the same key so that locking again (which wraps
+/// them in a Stack) does not throw away their navigation and state.
+class _Tabs extends StatelessWidget {
+  const _Tabs();
+  static final _key = GlobalKey();
+  @override
+  Widget build(BuildContext context) => MainTabs(key: _key);
 }

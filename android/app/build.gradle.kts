@@ -59,8 +59,18 @@ android {
     }
 }
 
+// The public edition does not use Firebase: skip google-services.json for it,
+// so no Firebase project details end up in the Play Store app.
+tasks.configureEach {
+    if (name.startsWith("process") && name.contains("Public") && name.endsWith("GoogleServices")) {
+        enabled = false
+    }
+}
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // AppCompat themes (styles.xml) for the local_auth biometric prompt.
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
 
 flutter {

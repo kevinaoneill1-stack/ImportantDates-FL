@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/developer_access.dart';
+import '../data/passcode_store.dart';
 import '../theme/app_theme.dart';
 
 /// Set / change a numeric passcode (min four digits, entered twice).
@@ -103,6 +104,7 @@ Future<bool> showPasscodePrompt(
   required bool Function(String) verify,
   required String errorText,
   bool destructive = false,
+  bool countAttempts = false,
 }) async {
   final r = await showDialog<bool>(
     context: context,
@@ -114,6 +116,7 @@ Future<bool> showPasscodePrompt(
       verify: verify,
       errorText: errorText,
       destructive: destructive,
+      countAttempts: countAttempts,
     ),
   );
   return r ?? false;
@@ -128,10 +131,14 @@ class _PasscodePromptDialog extends StatefulWidget {
     required this.verify,
     required this.errorText,
     required this.destructive,
+    required this.countAttempts,
   });
   final String title, hint, footer, actionLabel, errorText;
   final bool Function(String) verify;
   final bool destructive;
+
+  /// Counts wrong entries towards the shared wrong-entry limit.
+  final bool countAttempts;
   @override
   State<_PasscodePromptDialog> createState() => _PasscodePromptDialogState();
 }
@@ -145,12 +152,25 @@ class _PasscodePromptDialogState extends State<_PasscodePromptDialog> {
     super.dispose();
   }
 
-  void _submit() {
-    if (widget.verify(_c.text.trim())) {
+  Future<void> _submit() async {
+    final store = PasscodeStore.instance;
+    final locked = widget.countAttempts ? store.lockedUntil : null;
+    if (locked != null) {
+      setState(() {
+        _error = 'Too many wrong passcodes. ${PasscodeStore.waitText(locked)}';
+        _c.clear();
+      });
+      return;
+    }
+    final ok = widget.verify(_c.text.trim());
+    if (widget.countAttempts) await store.recordAttempt(success: ok);
+    if (!mounted) return;
+    if (ok) {
       Navigator.pop(context, true);
     } else {
+      final until = widget.countAttempts ? store.lockedUntil : null;
       setState(() {
-        _error = widget.errorText;
+        _error = until == null ? widget.errorText : '${widget.errorText} ${PasscodeStore.waitText(until)}';
         _c.clear();
       });
     }
@@ -189,7 +209,7 @@ class _PasscodePromptDialogState extends State<_PasscodePromptDialog> {
   }
 }
 
-Future<bool> verifyDeletePasscode(BuildContext context, String expected) => showPasscodePrompt(
+Future<bool> verifyDeletePasscode(BuildContext context) => showPasscodePrompt(
       context,
       title: 'Passcode Required',
       hint: 'Enter Delete Passcode',
@@ -197,7 +217,8 @@ Future<bool> verifyDeletePasscode(BuildContext context, String expected) => show
       actionLabel: 'Permanently Delete All Data',
       errorText: 'The passcode is incorrect. No data was deleted.',
       destructive: true,
-      verify: (v) => DeveloperAccess.matchesUserOrDeveloperPasscode(v, expected),
+      countAttempts: true,
+      verify: (v) => DeveloperAccess.matchesUserOrDeveloperPasscode(v, PasscodeKind.deleteAll),
     );
 
 Future<bool> verifyDeveloperPasscode(BuildContext context) => showPasscodePrompt(

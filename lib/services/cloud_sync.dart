@@ -15,7 +15,9 @@ import '../data/app_store.dart';
 import '../firebase_options.dart';
 import '../models/important_date.dart';
 import 'notification_service.dart';
+import 'app_log.dart';
 import 'sync_backend.dart';
+import 'sync_rules.dart';
 
 /// Two-way sync of all Important Dates data through Firebase (Cloud
 /// Firestore), so the app on iPhone, iPad, Mac and Android shares one set of
@@ -74,7 +76,6 @@ class CloudSync extends ChangeNotifier implements SyncState {
   /// started. Only these can be deleted from the cloud.
   Set<String> _seenLocal = {};
 
-  static const _maxBulkDeletes = 10;
 
   /// Set for one push after a deliberate bulk change (Delete All Data,
   /// Restore Backup), so the bulk-delete guard lets it through.
@@ -304,6 +305,7 @@ class CloudSync extends ChangeNotifier implements SyncState {
 
   void _onError(Object e) {
     error = 'Sync error: $e';
+    AppLog.error('Cloud Sync error', e);
     notifyListeners();
   }
 
@@ -403,30 +405,17 @@ class CloudSync extends ChangeNotifier implements SyncState {
     final u = user;
     if (!configured || u == null || !enabled || needsFirstSyncChoice) return;
     final local = _localRecords();
-    final writes = <(String, String?)>[]; // key, json (null = delete)
-    local.forEach((key, json) {
-      if (_known[key] != json) writes.add((key, json));
-    });
-    final missing = <String>[];
-    var deletes = 0;
-    for (final key in _known.keys.toList()) {
-      if (local.containsKey(key)) continue;
-      if (_seenLocal.contains(key)) {
-        writes.add((key, null)); // deleted on this device
-        deletes++;
-      } else {
-        missing.add(key); // never here this session: fetch it, do not delete it
-      }
-    }
-    _seenLocal.addAll(local.keys.where((k) => !k.startsWith('meta/')));
-    if (missing.isNotEmpty) unawaited(_refetch(missing));
     final allowBulk = _allowBulkDelete;
     _allowBulkDelete = false;
-    if (!allowBulk && deletes > _maxBulkDeletes && deletes * 2 > _known.length) {
-      writes.removeWhere((w) => w.$2 == null);
-      error = 'Cloud Sync stopped $deletes records from being deleted in the cloud at once. '
+    final plan = SyncRules.planCloudPush(local: local, known: _known, seenLocal: _seenLocal, allowBulk: allowBulk);
+    final writes = plan.writes;
+    final missing = plan.missing;
+    _seenLocal.addAll(local.keys.where((k) => !k.startsWith('meta/')));
+    if (missing.isNotEmpty) unawaited(_refetch(missing));
+    if (plan.blockedBulkDelete) {
+      error = 'Cloud Sync stopped ${plan.deletes} records from being deleted in the cloud at once. '
           'If you really meant to delete them, delete them in smaller groups.';
-      debugPrint(error);
+      AppLog.error(error);
     }
     if (writes.isEmpty) {
       lastSync = DateTime.now();
@@ -463,7 +452,7 @@ class CloudSync extends ChangeNotifier implements SyncState {
       }
       lastSync = DateTime.now();
       status = 'Up to date';
-      if (allowBulk || deletes <= _maxBulkDeletes) error = '';
+      if (!plan.blockedBulkDelete) error = '';
     } catch (e) {
       error = 'Could not send changes: $e';
     }
@@ -485,7 +474,9 @@ class CloudSync extends ChangeNotifier implements SyncState {
           final doc = await _col(u.uid, collection).doc(id).get();
           _known.remove(key);
           if (doc.exists && await _applyDoc(collection, id, doc.data() ?? {})) changed = true;
-        } catch (_) {}
+        } catch (e) {
+          AppLog.error('Could not fetch a record from the cloud', e);
+        }
       }
     } finally {
       _applyingRemote = false;
@@ -662,7 +653,9 @@ class CloudSync extends ChangeNotifier implements SyncState {
       _known = Map<String, String>.from(m['known'] as Map);
       final last = m['lastSync'];
       if (last is String) lastSync = DateTime.tryParse(last);
-    } catch (_) {}
+    } catch (e) {
+      AppLog.error('Could not read the saved Cloud Sync state', e);
+    }
   }
 
   void _persistState() {
@@ -671,7 +664,9 @@ class CloudSync extends ChangeNotifier implements SyncState {
       try {
         final f = await _stateFile();
         await f.writeAsString(jsonEncode({'uid': _knownUid, 'known': _known, 'lastSync': lastSync?.toIso8601String()}));
-      } catch (_) {}
+      } catch (e) {
+        AppLog.error('Could not save the Cloud Sync state', e);
+      }
     });
   }
 

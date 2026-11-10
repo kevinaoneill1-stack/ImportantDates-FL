@@ -156,9 +156,11 @@ packages:
   document_store:
     dependency: "direct main"
     description:
-      path: "../../document-store/packages/document_store"
-      relative: true
-    source: path
+      path: "packages/document_store"
+      ref: main
+      resolved-ref: "4286d17ffd188a9f38a7c93451c0221f584cabee"
+      url: "https://github.com/kevinaoneill1-stack/document-store.git"
+    source: git
     version: "1.0.0"
   fake_async:
     dependency: transitive

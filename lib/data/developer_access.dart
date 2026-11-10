@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'passcode_store.dart';
+
 /// Hidden developer support access.
 ///
 /// The codes are NOT stored in the source code (the repository is public).
@@ -32,12 +34,12 @@ class DeveloperAccess {
   static bool get isEnabled =>
       (overridePasscode.isNotEmpty || controlsPasscode.isNotEmpty) && (!kReleaseMode || forceEnableInRelease);
 
-  static bool matchesUserOrDeveloperPasscode(String entered, String userPasscode) {
-    final value = entered.trim();
-    final user = userPasscode.trim();
-    if (isEnabled && overridePasscode.isNotEmpty && value == overridePasscode) return true;
-    return user.isNotEmpty && value == user;
-  }
+  /// True when [entered] is the developer override passcode (enabled builds only).
+  static bool isOverride(String entered) =>
+      isEnabled && overridePasscode.isNotEmpty && entered.trim() == overridePasscode;
+
+  static bool matchesUserOrDeveloperPasscode(String entered, PasscodeKind kind) =>
+      isOverride(entered) || PasscodeStore.instance.matches(kind, entered);
 
   static bool matchesControlsPasscode(String entered) =>
       isEnabled && controlsPasscode.isNotEmpty && entered.trim() == controlsPasscode;

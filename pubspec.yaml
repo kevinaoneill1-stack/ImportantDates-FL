@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 67 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+67
+# Version 3, Build 68 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+68
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
@@ -23,6 +23,10 @@ dependencies:
   open_filex: ^4.7.0
   url_launcher: ^6.3.2
   pdf: ^3.11.3
+  # App lock: hashed passcodes in the keychain / keystore, Face ID / fingerprint.
+  flutter_secure_storage: ">=9.2.2 <11.0.0"
+  local_auth: ">=2.3.0 <4.0.0"
+  crypto: ^3.0.6
   # Cloud Sync (Firebase), as in MyTravelApp-FL.
   firebase_core: ">=3.0.0 <6.0.0"
   firebase_auth: ">=5.0.0 <8.0.0"
@@ -33,8 +37,15 @@ dependencies:
   googleapis: ">=13.2.0 <17.0.0"
   http: ^1.2.2
   # Shared document storage used by all my apps (Flutter Apps/document-store).
+  # Fetched from GitHub so a fresh clone builds on any machine (pubspec.lock
+  # pins the exact commit; `flutter pub upgrade document_store` takes the
+  # latest). The repo is private: git needs your GitHub sign-in.
+  # To work on a local copy instead, see pubspec_overrides.example.yaml.
   document_store:
-    path: ../../document-store/packages/document_store
+    git:
+      url: https://github.com/kevinaoneill1-stack/document-store.git
+      ref: main
+      path: packages/document_store
 
 # image 4.11.0 (pulled in by pdf) calls ZLibDecoder.decodeLazy, which the
 # resolved archive 4.0.x does not have. Pin image to a release that builds.

@@ -4,6 +4,7 @@ import 'app_info.dart';
 import 'config/flavor.dart';
 import 'data/app_settings.dart';
 import 'data/app_store.dart';
+import 'data/passcode_store.dart';
 import 'screens/lock_gate.dart';
 import 'services/attachment_sync.dart';
 import 'services/cloud_sync.dart';
@@ -19,6 +20,7 @@ Future<void> runImportantDates(AppFlavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   Flavor.current = flavor;
   await AppSettings.load();
+  await PasscodeStore.load();
   await AppStore.instance.load();
   await NotificationService.init();
   if (Flavor.usesFirebase) {

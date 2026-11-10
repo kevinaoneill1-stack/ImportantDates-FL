@@ -6,7 +6,10 @@ import '../app_info.dart';
 import '../data/app_settings.dart';
 import '../data/app_store.dart';
 import '../data/developer_access.dart';
+import '../data/passcode_store.dart';
+import '../services/app_log.dart';
 import '../services/backup_service.dart';
+import '../services/biometric_unlock.dart';
 import '../services/file_actions.dart';
 import '../services/sync_backend.dart';
 import '../theme/app_theme.dart';
@@ -17,13 +20,18 @@ import 'home_screen.dart' show HomeHero;
 import 'passcode_screens.dart';
 import 'sync_screen.dart';
 
+/// Settings, data and passcodes. The cards below are const, so each one
+/// listens itself (a const child is not rebuilt with its parent).
+Listenable get _settingsChanges =>
+    Listenable.merge([AppSettings.instance, AppStore.instance, PasscodeStore.instance]);
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([AppSettings.instance, AppStore.instance]),
+      listenable: Listenable.merge([AppSettings.instance, AppStore.instance, PasscodeStore.instance]),
       builder: (context, _) => AppPage(
         title: 'App Settings',
         spacing: 18,
@@ -44,6 +52,7 @@ class SettingsScreen extends StatelessWidget {
           const _ToolsShortcutsCard(),
           const _AutomaticBackupCard(),
           const _StorageCard(),
+          const _RecentProblemsCard(),
           const _DeleteAllCard(),
           _versionCard(context),
           Text(
@@ -83,17 +92,24 @@ class SettingsScreen extends StatelessWidget {
 class _AppPasscodeCard extends StatelessWidget {
   const _AppPasscodeCard();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _settingsChanges, builder: (context, child) => _content(context));
+
+  Widget _content(BuildContext context) {
     final s = AppSettings.instance;
+    final store = PasscodeStore.instance;
     Future<void> setup() async {
       final p = await showPasscodeSetup(
         context,
-        title: s.appPasscode.isEmpty ? 'Set App Passcode' : 'Change App Passcode',
+        title: store.has(PasscodeKind.app) ? 'Change App Passcode' : 'Set App Passcode',
         explanation: 'Choose a numeric passcode you will remember. You will use it to unlock Important Dates.',
       );
-      if (p != null) {
-        s.appPasscode = p;
+      if (p == null) return;
+      try {
+        await store.set(PasscodeKind.app, p);
         s.passcodeEnabled = true;
+      } catch (e) {
+        if (context.mounted) await showMessage(context, 'Passcode Not Saved', e.toString());
       }
     }
 
@@ -111,17 +127,38 @@ class _AppPasscodeCard extends StatelessWidget {
               setup();
             } else {
               s.passcodeEnabled = false;
-              s.appPasscode = '';
+              s.biometricUnlockEnabled = false;
+              store.clear(PasscodeKind.app);
             }
           },
         ),
         if (s.passcodeEnabled) ...[
+          FutureBuilder<bool>(
+            future: BiometricUnlock.isAvailable(),
+            builder: (context, snap) => snap.data != true
+                ? const SizedBox.shrink()
+                : SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Unlock with Face ID / Fingerprint'),
+                    subtitle: const Text('The passcode still works if this fails'),
+                    value: s.biometricUnlockEnabled,
+                    activeTrackColor: AppTheme.primary,
+                    onChanged: (v) async {
+                      // Confirm it works before relying on it.
+                      if (v && !await BiometricUnlock.authenticate()) return;
+                      s.biometricUnlockEnabled = v;
+                    },
+                  ),
+          ),
           const Divider(),
           const Row(children: [
             Icon(Icons.verified_user_rounded, color: AppTheme.success, size: 18),
             SizedBox(width: 6),
             Text('Passcode is active', style: TextStyle(color: AppTheme.success, fontWeight: FontWeight.w600)),
           ]),
+          const SizedBox(height: 4),
+          Text('The app locks again when it has been in the background for a minute.',
+              style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 10),
           OutlinedButton.icon(onPressed: setup, icon: const Icon(Icons.key_rounded), label: const Text('Change App Passcode')),
         ],
@@ -235,7 +272,10 @@ class _HomeAppearanceCardState extends State<_HomeAppearanceCard> {
 class _ToolsShortcutsCard extends StatelessWidget {
   const _ToolsShortcutsCard();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _settingsChanges, builder: (context, child) => _content(context));
+
+  Widget _content(BuildContext context) {
     final s = AppSettings.instance;
     Widget sw(String label, bool v, ValueChanged<bool> f) => SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero, dense: true, title: Text(label), value: v, activeTrackColor: AppTheme.primary, onChanged: f);
@@ -255,7 +295,10 @@ class _ToolsShortcutsCard extends StatelessWidget {
 class _AutomaticBackupCard extends StatelessWidget {
   const _AutomaticBackupCard();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _settingsChanges, builder: (context, child) => _content(context));
+
+  Widget _content(BuildContext context) {
     final s = AppSettings.instance;
     final last = s.lastBackupDate;
     return AppCard(
@@ -367,20 +410,70 @@ class _StorageCard extends StatelessWidget {
   }
 }
 
+/// Problems the app recovered from since it was opened (sync, backups,
+/// reminders, attachments). Hidden when there are none.
+class _RecentProblemsCard extends StatelessWidget {
+  const _RecentProblemsCard();
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: AppLog.changes,
+      builder: (context, count, child) {
+        final entries = AppLog.entries;
+        if (entries.isEmpty) return const SizedBox.shrink();
+        final t = Theme.of(context).textTheme;
+        return AppCard(
+          accent: AppTheme.warning,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            SectionTitle(
+              title: 'Recent Problems',
+              subtitle: '${entries.length} since the app was opened. Your data is not affected unless a message says so.',
+              icon: Icons.report_problem_rounded,
+            ),
+            const SizedBox(height: 8),
+            for (final e in entries.take(10))
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(e.message, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(
+                    '${DateFormatting.dateTimeShort(e.time)}${e.detail.isEmpty ? '' : ' • ${e.detail}'}',
+                    style: t.bodySmall,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ]),
+              ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(onPressed: AppLog.clear, icon: const Icon(Icons.clear_all_rounded), label: const Text('Clear')),
+          ]),
+        );
+      },
+    );
+  }
+}
+
 class _DeleteAllCard extends StatelessWidget {
   const _DeleteAllCard();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _settingsChanges, builder: (context, child) => _content(context));
+
+  Widget _content(BuildContext context) {
     final s = AppSettings.instance;
+    final store = PasscodeStore.instance;
     Future<void> setup() async {
       final p = await showPasscodeSetup(
         context,
-        title: s.deleteAllPasscode.isEmpty ? 'Set Delete Passcode' : 'Change Delete Passcode',
+        title: store.has(PasscodeKind.deleteAll) ? 'Change Delete Passcode' : 'Set Delete Passcode',
         explanation: 'Choose a numeric passcode you will remember. It is used only for Delete All Data.',
       );
-      if (p != null) {
-        s.deleteAllPasscode = p;
+      if (p == null) return;
+      try {
+        await store.set(PasscodeKind.deleteAll, p);
         s.deleteAllPasscodeEnabled = true;
+      } catch (e) {
+        if (context.mounted) await showMessage(context, 'Passcode Not Saved', e.toString());
       }
     }
 
@@ -394,8 +487,8 @@ class _DeleteAllCard extends StatelessWidget {
         confirmLabel: 'Continue',
       );
       if (!ok || !context.mounted) return;
-      if (s.deleteAllPasscodeEnabled) {
-        final verified = await verifyDeletePasscode(context, s.deleteAllPasscode);
+      if (s.deleteAllPasscodeEnabled && store.has(PasscodeKind.deleteAll)) {
+        final verified = await verifyDeletePasscode(context);
         if (!verified) return;
       }
       try {
@@ -428,7 +521,7 @@ class _DeleteAllCard extends StatelessWidget {
               setup();
             } else {
               s.deleteAllPasscodeEnabled = false;
-              s.deleteAllPasscode = '';
+              store.clear(PasscodeKind.deleteAll);
             }
           },
         ),

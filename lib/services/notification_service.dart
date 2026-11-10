@@ -6,6 +6,7 @@ import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../models/important_date.dart';
+import 'app_log.dart';
 
 /// Reminder notifications at 9:00 am, 90/60/30/7 days before each due date.
 ///
@@ -45,7 +46,7 @@ class NotificationService {
       ));
       _ready = true;
     } catch (e) {
-      debugPrint('Notification setup failed: $e');
+      AppLog.error('Notification setup failed', e);
     }
   }
 
@@ -71,7 +72,7 @@ class NotificationService {
             false;
       }
     } catch (e) {
-      debugPrint('Notification permission error: $e');
+      AppLog.error('Notification permission error', e);
     }
     return false;
   }
@@ -118,7 +119,7 @@ class NotificationService {
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         );
       } catch (e) {
-        debugPrint('Notification schedule error: $e');
+        AppLog.error('Could not schedule a reminder', e);
       }
     }
   }

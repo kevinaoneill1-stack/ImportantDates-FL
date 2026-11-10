@@ -1,6 +1,6 @@
 # Important Dates — Flutter edition
 
-**Version 3.0.67FL** (Version 3 • Build 67FL)
+**Version 3.0.68FL** (Version 3 • Build 68FL)
 
 A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
 Mac and Android** from one code base. It replaces the native app on the App
@@ -14,14 +14,10 @@ a tag such as `v3.0.64FL` (see **Versions with git** below).
 
 ## Getting started
 
-Requires Flutter 3.35 or newer, and the shared `document-store` folder next to
-the `ImportantDates` folder (see CLOUD_SYNC_SETUP.md):
-
-```
-Flutter Apps/
-  document-store/
-  ImportantDates/ImportantDates_FL/
-```
+Requires Flutter 3.35 or newer. The shared `document_store` package is fetched
+from its (private) GitHub repo by `flutter pub get`, so git must be signed in to
+GitHub. To build against a local `document-store` folder instead, copy
+`pubspec_overrides.example.yaml` to `pubspec_overrides.yaml` (see CLOUD_SYNC_SETUP.md).
 
 ```bash
 cd "/Users/kevinoneill/Kevin/Flutter Apps/ImportantDates/ImportantDates_FL"

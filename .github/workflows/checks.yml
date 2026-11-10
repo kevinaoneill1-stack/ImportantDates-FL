@@ -1,0 +1,40 @@
+# Runs `flutter analyze` and `flutter test` on every push and pull request.
+#
+# document_store comes from a private repo, so this needs a repository secret
+# DOCUMENT_STORE_TOKEN: a fine-grained GitHub token with read-only "Contents"
+# access to kevinaoneill1-stack/document-store (Settings › Secrets and
+# variables › Actions). Without the secret the checks are skipped.
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    env:
+      DOCUMENT_STORE_TOKEN: ${{ secrets.DOCUMENT_STORE_TOKEN }}
+    steps:
+      - name: Skip without DOCUMENT_STORE_TOKEN
+        if: env.DOCUMENT_STORE_TOKEN == ''
+        run: echo "::notice::Add the DOCUMENT_STORE_TOKEN secret to run the checks (see this file)."
+      - uses: actions/checkout@v4
+        if: env.DOCUMENT_STORE_TOKEN != ''
+      - name: Allow access to the private document-store repo
+        if: env.DOCUMENT_STORE_TOKEN != ''
+        run: git config --global url."https://x-access-token:${DOCUMENT_STORE_TOKEN}@github.com/kevinaoneill1-stack/".insteadOf "https://github.com/kevinaoneill1-stack/"
+      - uses: subosito/flutter-action@v2
+        if: env.DOCUMENT_STORE_TOKEN != ''
+        with:
+          channel: stable
+          cache: true
+      - name: flutter pub get
+        if: env.DOCUMENT_STORE_TOKEN != ''
+        run: flutter pub get
+      - name: flutter analyze
+        if: env.DOCUMENT_STORE_TOKEN != ''
+        run: flutter analyze --no-fatal-infos
+      - name: flutter test
+        if: env.DOCUMENT_STORE_TOKEN != ''
+        run: flutter test

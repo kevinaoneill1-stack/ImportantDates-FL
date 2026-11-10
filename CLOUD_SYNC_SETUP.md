@@ -80,14 +80,21 @@ restore it in this app before turning on Cloud Sync.
 
 Reminders are scheduled on every device from the synced dates.
 
-## The `document-store` folder
+## The `document_store` package
 
-Attachments use the shared package in `Flutter Apps/document-store`
-(the `document-store` GitHub repo), the same as MyTravelApp. The project expects:
+Attachments use the shared `document_store` package (the private
+`kevinaoneill1-stack/document-store` GitHub repo), the same as MyTravelApp.
+`pubspec.yaml` fetches it from GitHub (`ref: main`, folder
+`packages/document_store`); `pubspec.lock` pins the commit. After changing
+document-store, run `flutter pub upgrade document_store` here to take it.
+
+To build against your local copy while working on it, copy
+`pubspec_overrides.example.yaml` to `pubspec_overrides.yaml` (git-ignored). It
+points at the old location:
 
 ```
 Flutter Apps/
-  document-store/          <- git clone https://github.com/kevinaoneill1-stack/document-store
+  document-store/
   ImportantDates/
     ImportantDates_FL/     <- this project
 ```

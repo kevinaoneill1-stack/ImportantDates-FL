@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_info.dart';
 import '../data/app_settings.dart';
+import '../data/passcode_store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 
@@ -11,12 +12,15 @@ class DeveloperControlsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: AppSettings.instance,
+      listenable: Listenable.merge([AppSettings.instance, PasscodeStore.instance]),
       builder: (context, _) {
         final s = AppSettings.instance;
+        final store = PasscodeStore.instance;
         final t = Theme.of(context).textTheme;
-        final appActive = s.passcodeEnabled && s.appPasscode.isNotEmpty;
-        final deleteActive = s.deleteAllPasscodeEnabled && s.deleteAllPasscode.isNotEmpty;
+        final appSet = store.has(PasscodeKind.app);
+        final deleteSet = store.has(PasscodeKind.deleteAll);
+        final appActive = s.passcodeEnabled && appSet;
+        final deleteActive = s.deleteAllPasscodeEnabled && deleteSet;
 
         Future<void> clear({required bool app}) async {
           final ok = await confirmAction(
@@ -27,12 +31,14 @@ class DeveloperControlsScreen extends StatelessWidget {
           );
           if (!ok) return;
           if (app) {
-            s.appPasscode = '';
+            await store.clear(PasscodeKind.app);
             s.passcodeEnabled = false;
+            s.biometricUnlockEnabled = false;
           } else {
-            s.deleteAllPasscode = '';
+            await store.clear(PasscodeKind.deleteAll);
             s.deleteAllPasscodeEnabled = false;
           }
+          await store.recordAttempt(success: true); // also lifts any wrong-entry wait
         }
 
         Widget statusRow(String title, String status) => Row(children: [
@@ -80,7 +86,7 @@ class DeveloperControlsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(foregroundColor: AppTheme.danger),
-                  onPressed: !s.passcodeEnabled && s.appPasscode.isEmpty ? null : () => clear(app: true),
+                  onPressed: !s.passcodeEnabled && !appSet ? null : () => clear(app: true),
                   icon: const Icon(Icons.lock_open_rounded),
                   label: const Text('Clear User App Passcode'),
                 ),
@@ -89,7 +95,7 @@ class DeveloperControlsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(foregroundColor: AppTheme.danger),
-                  onPressed: !s.deleteAllPasscodeEnabled && s.deleteAllPasscode.isEmpty ? null : () => clear(app: false),
+                  onPressed: !s.deleteAllPasscodeEnabled && !deleteSet ? null : () => clear(app: false),
                   icon: const Icon(Icons.key_off_rounded),
                   label: const Text('Clear User Delete Passcode'),
                 ),

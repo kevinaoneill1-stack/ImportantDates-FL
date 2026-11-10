@@ -14,7 +14,9 @@ import '../data/app_store.dart';
 import '../models/important_date.dart';
 import 'google_drive_auth.dart';
 import 'notification_service.dart';
+import 'app_log.dart';
 import 'sync_backend.dart';
+import 'sync_rules.dart';
 
 class DriveSyncException implements Exception {
   DriveSyncException(this.message);
@@ -57,7 +59,6 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
 
   static const dataFileName = 'important_dates_sync.json';
   static const _attachmentPrefix = 'attachment-';
-  static const _maxBulkDeletes = 10;
   static const _maxAttachmentBytes = 50 * 1024 * 1024;
   static const _keepTombstones = Duration(days: 180);
   static const _orphanAge = Duration(days: 1);
@@ -199,7 +200,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-    } catch (_) {}
+    } catch (e) {
+      AppLog.error('Google sign-out failed', e);
+    }
     await _restart();
   }
 
@@ -314,6 +317,7 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
       }
     } catch (e) {
       error = _describe(e);
+      AppLog.error('Google Drive Sync error', e);
       status = 'Could not sync';
     } finally {
       _syncing = false;
@@ -357,73 +361,28 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
     final local = _localRecords();
     final now = DateTime.now().toUtc();
 
-    // Records gone from this device since the last sync.
-    final localDeletes = <String>{};
-    for (final key in _known.keys) {
-      if (!local.containsKey(key) && _seenLocal.contains(key)) localDeletes.add(key);
-    }
     final allowBulk = _allowBulkDelete;
     _allowBulkDelete = false;
-    final blocked = <String>{};
-    if (!allowBulk && localDeletes.length > _maxBulkDeletes && localDeletes.length * 2 > _known.length) {
-      blocked.addAll(localDeletes);
-      localDeletes.clear();
-    }
 
     final records = Map<String, _Record>.of(remote.records);
     final deleted = Map<String, DateTime>.of(remote.deleted)..removeWhere((_, t) => now.difference(t) > _keepTombstones);
     var upload = remote.fileId == null || remote.extraFileIds.isNotEmpty || deleted.length != remote.deleted.length;
-    final apply = <String, String>{}; // key -> JSON to put on this device
-    final remove = <String>{}; // keys to delete on this device
-    final written = <String, String>{}; // key -> JSON this device sends
-    final tombstoned = <String>{};
 
-    final keys = {...local.keys, ...records.keys, ...deleted.keys, ..._known.keys};
-    for (final key in keys) {
-      if (blocked.contains(key)) continue;
-      final known = _known[key];
-      final mine = local[key];
-      final theirs = records[key];
-      final deletedAt = deleted[key];
-
-      if (mine != null) {
-        if (theirs != null) {
-          if (mine == theirs.json) {
-            _known[key] = mine;
-            continue;
-          }
-          final mineChanged = mine != known;
-          final theirsChanged = theirs.json != known;
-          final takeMine = mineChanged && (!theirsChanged || (!preferRemote && _lastLocalChange.isAfter(theirs.modified)));
-          if (takeMine) {
-            written[key] = mine;
-          } else {
-            apply[key] = theirs.json;
-          }
-        } else if (deletedAt != null && known != null) {
-          // Deleted on another device. Keep it only if edited here since.
-          if (mine != known && _lastLocalChange.isAfter(deletedAt)) {
-            written[key] = mine;
-          } else {
-            remove.add(key);
-          }
-        } else {
-          written[key] = mine; // new on this device
-        }
-      } else if (localDeletes.contains(key)) {
-        if (theirs != null && theirs.json != known) {
-          apply[key] = theirs.json; // changed elsewhere after it was deleted here: keep it
-        } else if (theirs != null || deletedAt == null) {
-          tombstoned.add(key);
-        } else {
-          _known.remove(key);
-        }
-      } else if (theirs != null) {
-        apply[key] = theirs.json; // new elsewhere, or missing on this device
-      } else {
-        _known.remove(key);
-      }
-    }
+    final merge = SyncRules.mergeDrive(
+      local: local,
+      known: _known,
+      remote: records.map((k, r) => MapEntry(k, RemoteRecord(r.json, r.modified))),
+      deleted: deleted,
+      seenLocal: _seenLocal,
+      allowBulk: allowBulk,
+      preferRemote: preferRemote,
+      lastLocalChange: _lastLocalChange,
+    );
+    final apply = merge.apply;
+    final remove = merge.remove;
+    final written = Map<String, String>.of(merge.written); // grows below
+    final tombstoned = merge.tombstoned;
+    final blocked = merge.blocked;
 
     // Put the Drive side's changes on this device.
     if (apply.isNotEmpty || remove.isNotEmpty) {
@@ -460,6 +419,7 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
     if (blocked.isNotEmpty) {
       error = 'Google Drive Sync stopped ${blocked.length} records from being deleted in Drive at once. '
           'If you really meant to delete them, delete them in smaller groups.';
+      AppLog.error(error);
     }
 
     if (written.isEmpty && tombstoned.isEmpty && !upload) return;
@@ -483,7 +443,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
     for (final id in remote.extraFileIds) {
       try {
         await api.files.delete(id);
-      } catch (_) {}
+      } catch (e) {
+        AppLog.error('Could not remove a duplicate sync file from Google Drive', e);
+      }
     }
     for (final e in written.entries) {
       _known[e.key] = e.value;
@@ -521,7 +483,8 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
     final Map<String, dynamic> m;
     try {
       m = Map<String, dynamic>.from(jsonDecode(json) as Map);
-    } catch (_) {
+    } catch (e) {
+      AppLog.error('A record from Google Drive could not be read and was skipped', e);
       return false;
     }
     switch (collection) {
@@ -628,7 +591,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
         });
         other.deleted.forEach((k, t) => data.deleted[k] ??= t);
         extras.add(extra.id);
-      } catch (_) {} // unreadable duplicate: leave it alone
+      } catch (e) { // unreadable duplicate: leave it alone
+        AppLog.error('A duplicate sync file in Google Drive could not be read', e);
+      }
     }
     return _RemoteData(data.records, data.deleted, fileId: main.id, version: main.version, extraFileIds: extras);
   }
@@ -770,7 +735,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
       try {
         await api.files.delete(f.id);
         files.remove(f.id);
-      } catch (_) {}
+      } catch (e) {
+        AppLog.error('Could not remove an unused attachment from Google Drive', e);
+      }
     }
   }
 
@@ -784,7 +751,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
       final api = await _api();
       await api.files.delete(id);
       _driveAttachments.remove(id);
-    } catch (_) {}
+    } catch (e) {
+      AppLog.error('Could not delete an attachment from Google Drive', e);
+    }
   }
 
   @override
@@ -916,7 +885,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
       _known = Map<String, String>.from(m['known'] as Map);
       final last = m['lastSync'];
       if (last is String) lastSync = DateTime.tryParse(last);
-    } catch (_) {}
+    } catch (e) {
+      AppLog.error('Could not read the saved Google Drive sync state', e);
+    }
   }
 
   void _persistState() {
@@ -926,7 +897,9 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
         final f = await _stateFile();
         await f.writeAsString(
             jsonEncode({'account': _knownAccount, 'known': _known, 'lastSync': lastSync?.toIso8601String()}));
-      } catch (_) {}
+      } catch (e) {
+        AppLog.error('Could not save the Google Drive sync state', e);
+      }
     });
   }
 

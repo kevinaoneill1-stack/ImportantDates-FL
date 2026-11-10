@@ -54,17 +54,17 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  // App passcode
+  // App passcode (the passcode itself is hashed in PasscodeStore).
   bool get passcodeEnabled => _b('passcodeEnabled', false);
   set passcodeEnabled(bool v) => _set('passcodeEnabled', v);
-  String get appPasscode => _s('appPasscode', '');
-  set appPasscode(String v) => _set('appPasscode', v);
 
-  // Delete All passcode
+  /// Also allow Face ID / Touch ID / fingerprint on the lock screen.
+  bool get biometricUnlockEnabled => _b('biometricUnlockEnabled', false);
+  set biometricUnlockEnabled(bool v) => _set('biometricUnlockEnabled', v);
+
+  // Delete All passcode (hashed in PasscodeStore).
   bool get deleteAllPasscodeEnabled => _b('deleteAllPasscodeEnabled', false);
   set deleteAllPasscodeEnabled(bool v) => _set('deleteAllPasscodeEnabled', v);
-  String get deleteAllPasscode => _s('deleteAllPasscode', '');
-  set deleteAllPasscode(String v) => _set('deleteAllPasscode', v);
 
   // Tools shortcuts
   bool get showSearch => _b('showHomeSearch', true);

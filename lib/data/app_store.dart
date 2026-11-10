@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/important_date.dart';
+import '../services/app_log.dart';
 import '../services/backup_service.dart';
 import '../services/notification_service.dart';
 import 'app_settings.dart';
@@ -74,10 +75,12 @@ class AppStore extends ChangeNotifier {
         _sortLists();
       } catch (e) {
         loadFailed = true;
-        debugPrint('Important Dates: could not read data file: $e');
+        AppLog.error('Could not read the data file (a copy was set aside)', e);
         try {
           await _dataFile.copy('${_dataFile.path}.unreadable-${DateTime.now().millisecondsSinceEpoch}');
-        } catch (_) {}
+        } catch (e) {
+          AppLog.error('Could not set aside the unreadable data file', e);
+        }
       }
     }
   }
@@ -136,7 +139,7 @@ class AppStore extends ChangeNotifier {
       try {
         await BackupService.createAutomaticBackup();
       } catch (e) {
-        debugPrint('Change-triggered automatic backup failed: $e');
+        AppLog.error('Automatic backup after a change failed', e);
       }
     });
   }
