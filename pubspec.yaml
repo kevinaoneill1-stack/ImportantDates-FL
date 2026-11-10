@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 68 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+68
+# Version 3, Build 69 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+69
 
 environment:
   sdk: '>=3.6.0 <4.0.0'

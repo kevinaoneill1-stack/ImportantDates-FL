@@ -55,11 +55,12 @@ that build — set it back to `"false"` afterwards.
 
 ### Firebase and the public edition
 
-The public edition never starts Firebase, and its builds leave out the Firebase
-config files: Android skips `google-services.json` for the `public` flavor
-(`android/app/build.gradle.kts`), iOS and macOS exclude `GoogleService-Info.plist`
-(`EXCLUDED_SOURCE_FILE_NAMES` in `ios/Flutter/Flavor-public.xcconfig` and
-`macos/Runner/Configs/AppInfo.xcconfig`). Firebase itself is started from
+The public edition never starts Firebase. Its Android build skips
+`google-services.json` (`android/app/build.gradle.kts`). On iOS and macOS,
+`GoogleService-Info.plist` stays in both editions: leaving it out with
+`EXCLUDED_SOURCE_FILE_NAMES` stopped the keyboard from appearing anywhere in the
+public iOS app (3.0.68FL), so don't use that setting. The file is unused there.
+Firebase itself is started from
 `lib/firebase_options.dart`, so the personal edition does not depend on those files.
 
 The Firebase SDK code is still compiled into the public app: Flutter links every
