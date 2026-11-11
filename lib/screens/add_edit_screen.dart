@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/app_store.dart';
+import '../data/default_items.dart';
 import '../models/important_date.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
@@ -129,7 +130,11 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   hint: 'Select an item',
                   value: _item,
                   options: items,
-                  onChanged: (v) => setState(() => _item = v),
+                  onChanged: (v) => setState(() {
+                    _item = v;
+                    // Passport, Driving Licence etc. are travel documents.
+                    if (isTravelDocumentItem(v)) _travel = true;
+                  }),
                   emptyAction: () => pushPage(context, const ManageListScreen(kind: ManageListKind.items)),
                 ),
                 const SizedBox(height: 12),

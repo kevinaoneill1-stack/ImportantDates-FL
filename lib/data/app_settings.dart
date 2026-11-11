@@ -147,9 +147,10 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  // The default Items (default_items.dart) have been added on this device.
-  bool get defaultItemsAdded => _b('defaultItemsAdded', false);
-  set defaultItemsAdded(bool v) => _set('defaultItemsAdded', v);
+  /// How many groups of default Items (default_items.dart) this device has
+  /// had. 3.0.70FL stored a yes/no flag, which counts as the first group.
+  int get defaultItemGroupsAdded => _i('defaultItemGroupsAdded', _b('defaultItemsAdded', false) ? 1 : 0);
+  set defaultItemGroupsAdded(int v) => _set('defaultItemGroupsAdded', v);
 
   // First launch: Help & Instructions is shown once.
   bool get firstLaunchHelpShown => _b('firstLaunchHelpShown', false);

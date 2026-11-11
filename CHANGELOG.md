@@ -1,5 +1,10 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.71FL
+- New ready-made Item: Health Insurance (added once on devices that already had the first 15).
+- Picking Passport, Passport Card, Travel Insurance, Driving Licence or Health Insurance on Add / Edit Item
+  switches on Travel Document (it can still be switched off). Lists in `lib/data/default_items.dart`.
+
 ## 3.0.70FL
 - 15 ready-made Items (Boiler Service, Car Insurance, Car NCT, Car Service, Car Tax, Driving Licence, Drugs Payment
   Scheme Card, House Insurance, LPT, Passport, Passport Card, Public Service Card, Travel Insurance, TV Licence, VHI)

@@ -87,19 +87,20 @@ class AppStore extends ChangeNotifier {
     await _addDefaultItemsOnce();
   }
 
-  /// Puts the default Items into the list the first time this version runs
-  /// on a device (new and existing installs). Items the user deletes later
-  /// stay deleted. Skipped when the data file could not be read.
+  /// Puts default Items this device has not had yet into the list (new and
+  /// existing installs). Items the user deletes later stay deleted. Skipped
+  /// when the data file could not be read.
   Future<void> _addDefaultItemsOnce() async {
     final settings = AppSettings.instance;
-    if (settings.defaultItemsAdded || loadFailed) return;
-    final missing = missingDefaultItems(_items);
+    final done = settings.defaultItemGroupsAdded;
+    if (done >= defaultItemGroups.length || loadFailed) return;
+    final missing = missingDefaultItems(_items, groupsDone: done);
     if (missing.isNotEmpty) {
       _items.addAll(missing);
       _sortLists();
       await _save(triggerBackup: false);
     }
-    settings.defaultItemsAdded = true;
+    settings.defaultItemGroupsAdded = defaultItemGroups.length;
   }
 
   static String _nameOf(dynamic v) => v is Map ? (v['name'] as String? ?? '') : v.toString();
