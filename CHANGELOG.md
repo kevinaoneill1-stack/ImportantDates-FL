@@ -1,5 +1,11 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.70FL
+- 15 ready-made Items (Boiler Service, Car Insurance, Car NCT, Car Service, Car Tax, Driving Licence, Drugs Payment
+  Scheme Card, House Insurance, LPT, Passport, Passport Card, Public Service Card, Travel Insurance, TV Licence, VHI)
+  are added to Manage › Items once on each device, new or existing; ones already there are not duplicated, and ones
+  the user deletes are not added back. List in `lib/data/default_items.dart`.
+
 ## 3.0.69FL
 - Fix: no keyboard anywhere in the public iOS app. Removed `EXCLUDED_SOURCE_FILE_NAMES` (which left
   GoogleService-Info.plist out of public iOS/macOS builds); the file is back in both editions, unused by public.

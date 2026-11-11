@@ -147,6 +147,10 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
+  // The default Items (default_items.dart) have been added on this device.
+  bool get defaultItemsAdded => _b('defaultItemsAdded', false);
+  set defaultItemsAdded(bool v) => _set('defaultItemsAdded', v);
+
   // First launch: Help & Instructions is shown once.
   bool get firstLaunchHelpShown => _b('firstLaunchHelpShown', false);
   set firstLaunchHelpShown(bool v) => _set('firstLaunchHelpShown', v);

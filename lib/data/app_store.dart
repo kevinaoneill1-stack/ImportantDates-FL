@@ -11,6 +11,7 @@ import '../services/app_log.dart';
 import '../services/backup_service.dart';
 import '../services/notification_service.dart';
 import 'app_settings.dart';
+import 'default_items.dart';
 
 /// Single source of truth for Important Dates records, item types and names.
 ///
@@ -83,6 +84,22 @@ class AppStore extends ChangeNotifier {
         }
       }
     }
+    await _addDefaultItemsOnce();
+  }
+
+  /// Puts the default Items into the list the first time this version runs
+  /// on a device (new and existing installs). Items the user deletes later
+  /// stay deleted. Skipped when the data file could not be read.
+  Future<void> _addDefaultItemsOnce() async {
+    final settings = AppSettings.instance;
+    if (settings.defaultItemsAdded || loadFailed) return;
+    final missing = missingDefaultItems(_items);
+    if (missing.isNotEmpty) {
+      _items.addAll(missing);
+      _sortLists();
+      await _save(triggerBackup: false);
+    }
+    settings.defaultItemsAdded = true;
   }
 
   static String _nameOf(dynamic v) => v is Map ? (v['name'] as String? ?? '') : v.toString();
