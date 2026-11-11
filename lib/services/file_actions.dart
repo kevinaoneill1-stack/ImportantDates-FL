@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -59,6 +60,32 @@ class FileActions {
     final result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
     return _first(result);
   }
+
+  /// Photos from the photo library (iOS, Android), saved as JPEG.
+  static Future<List<PickedFile>> pickPhotos() async {
+    final photos = await ImagePicker().pickMultiImage(imageQuality: 85);
+    return [
+      for (var i = 0; i < photos.length; i++)
+        PickedFile(_photoName(photos.length > 1 ? i + 1 : null), await photos[i].readAsBytes()),
+    ];
+  }
+
+  /// A new photo from the camera (iOS, Android), saved as JPEG.
+  static Future<PickedFile?> takePhoto() async {
+    final photo = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
+    return photo == null ? null : PickedFile(_photoName(null), await photo.readAsBytes());
+  }
+
+  /// "Photo 2026-11-11 1303.jpg" (with " 2", " 3"… for several at once),
+  /// instead of the picker's random file names.
+  static String _photoName(int? number) {
+    final n = DateTime.now();
+    String two(int v) => v.toString().padLeft(2, '0');
+    final stamp = '${n.year}-${two(n.month)}-${two(n.day)} ${two(n.hour)}${two(n.minute)}';
+    return 'Photo $stamp${number == null ? '' : ' $number'}.jpg';
+  }
+
+  static bool get canUsePhotoLibrary => Platform.isIOS || Platform.isAndroid;
 
   static Future<List<PickedFile>> pickAttachments() async {
     final result = await FilePicker.platform.pickFiles(

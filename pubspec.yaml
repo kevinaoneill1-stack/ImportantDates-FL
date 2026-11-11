@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 71 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+71
+# Version 3, Build 72 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+72
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
@@ -26,6 +26,10 @@ dependencies:
   # App lock: hashed passcodes in the keychain / keystore, Face ID / fingerprint.
   flutter_secure_storage: ">=9.2.2 <11.0.0"
   local_auth: ">=2.3.0 <4.0.0"
+  # Attachments from the photo library or camera.
+  image_picker: ">=1.1.2 <2.0.0"
+  # PDF preview before export.
+  printing: ">=5.13.0 <6.0.0"
   crypto: ^3.0.6
   # Cloud Sync (Firebase), as in MyTravelApp-FL.
   firebase_core: ">=3.0.0 <6.0.0"

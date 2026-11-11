@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../data/app_store.dart';
 import '../models/important_date.dart';
-import '../services/file_actions.dart';
 import '../services/pdf_report.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
 import '../widgets/important_date_card.dart';
 import 'add_edit_screen.dart';
+import 'pdf_preview_screen.dart';
 
 enum QuickFilter { all, thirty, ninety, overdue, travel, completed }
 
@@ -106,7 +106,7 @@ class _AllItemsScreenState extends State<AllItemsScreen> {
               onPressed: () async {
                 final bytes = await PdfReport.createItemsPdf('All Items Report', filtered);
                 if (c.mounted) {
-                  await FileActions.exportFile(c, bytes: bytes, fileName: 'AllItemsReport.pdf', mimeType: 'application/pdf');
+                  await previewPdf(c, title: 'All Items Report', bytes: bytes, fileName: 'AllItemsReport.pdf');
                 }
               },
             ),

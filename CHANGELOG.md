@@ -1,5 +1,12 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.72FL
+- Attachments: the + button offers Photo Library, Take Photo or Files on iOS and Android (before, only Files,
+  which does not show the photo library on iPhone). Photos are saved as JPEG named "Photo <date> <time>.jpg".
+  macOS still opens the Files dialog. Uses image_picker.
+- PDF reports (Reports, All Items, Travel Documents) open in a preview first, with Export in the top bar.
+  Uses printing (PdfPreview).
+
 ## 3.0.71FL
 - New ready-made Item: Health Insurance (added once on devices that already had the first 15).
 - Picking Passport, Passport Card, Travel Insurance, Driving Licence or Health Insurance on Add / Edit Item

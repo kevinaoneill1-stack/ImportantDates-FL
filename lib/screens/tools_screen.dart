@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import '../data/app_settings.dart';
 import '../data/app_store.dart';
 import '../models/important_date.dart';
-import '../services/file_actions.dart';
 import '../services/pdf_report.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
 import '../widgets/common.dart';
 import '../widgets/important_date_card.dart';
 import 'all_items_screen.dart' show sortActiveFirst;
+import 'pdf_preview_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
   const ToolsScreen({super.key});
@@ -169,7 +169,7 @@ class ReportsScreen extends StatelessWidget {
               final items = [...AppStore.instance.dates.where(filter)]..sort((a, b) => a.dueDate.compareTo(b.dueDate));
               final bytes = await PdfReport.createItemsPdf(title, items);
               if (c.mounted) {
-                await FileActions.exportFile(c, bytes: bytes, fileName: '${title.replaceAll(' ', '')}.pdf', mimeType: 'application/pdf');
+                await previewPdf(c, title: title, bytes: bytes, fileName: '${title.replaceAll(' ', '')}.pdf');
               }
             },
           ),
@@ -300,7 +300,7 @@ class _TravelDocumentsScreenState extends State<TravelDocumentsScreen> {
                   : () async {
                       final bytes = await PdfReport.createItemsPdf('Travel Documents Report', shown);
                       if (c.mounted) {
-                        await FileActions.exportFile(c, bytes: bytes, fileName: 'TravelDocumentsReport.pdf', mimeType: 'application/pdf');
+                        await previewPdf(c, title: 'Travel Documents Report', bytes: bytes, fileName: 'TravelDocumentsReport.pdf');
                       }
                     },
             ),

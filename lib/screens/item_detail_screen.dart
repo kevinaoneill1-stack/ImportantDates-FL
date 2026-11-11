@@ -230,7 +230,41 @@ class ItemDetailScreen extends StatelessWidget {
 
   Future<void> _addAttachments(BuildContext context, ImportantDate item) async {
     try {
-      final files = await FileActions.pickAttachments();
+      // iOS / Android: choose where from. macOS: the Files dialog, as before.
+      var source = _AttachSource.files;
+      if (FileActions.canUsePhotoLibrary) {
+        final picked = await showModalBottomSheet<_AttachSource>(
+          context: context,
+          showDragHandle: true,
+          builder: (c) => SafeArea(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded),
+                title: const Text('Photo Library'),
+                onTap: () => Navigator.pop(c, _AttachSource.photos),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_rounded),
+                title: const Text('Take Photo'),
+                onTap: () => Navigator.pop(c, _AttachSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_rounded),
+                title: const Text('Files'),
+                subtitle: const Text('PDFs, scans and other documents'),
+                onTap: () => Navigator.pop(c, _AttachSource.files),
+              ),
+            ]),
+          ),
+        );
+        if (picked == null) return;
+        source = picked;
+      }
+      final files = switch (source) {
+        _AttachSource.photos => await FileActions.pickPhotos(),
+        _AttachSource.camera => [if (await FileActions.takePhoto() case final photo?) photo],
+        _AttachSource.files => await FileActions.pickAttachments(),
+      };
       for (final f in files) {
         await AppStore.instance.addAttachment(item, f.name, f.bytes);
       }
@@ -290,3 +324,5 @@ class ItemDetailScreen extends StatelessWidget {
     }
   }
 }
+
+enum _AttachSource { photos, camera, files }
