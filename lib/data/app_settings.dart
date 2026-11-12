@@ -66,6 +66,12 @@ class AppSettings extends ChangeNotifier {
   bool get deleteAllPasscodeEnabled => _b('deleteAllPasscodeEnabled', false);
   set deleteAllPasscodeEnabled(bool v) => _set('deleteAllPasscodeEnabled', v);
 
+  /// Home screen / lock screen widget shows item names. Off: only how many
+  /// items are due and the days left, since the widget is visible without
+  /// unlocking the app.
+  bool get widgetShowDetails => _b('widgetShowDetails', true);
+  set widgetShowDetails(bool v) => _set('widgetShowDetails', v);
+
   // Tools shortcuts
   bool get showSearch => _b('showHomeSearch', true);
   set showSearch(bool v) => _set('showHomeSearch', v);

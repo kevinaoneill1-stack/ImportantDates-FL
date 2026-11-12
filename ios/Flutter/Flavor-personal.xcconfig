@@ -2,3 +2,6 @@
 APP_DISPLAY_NAME = Important Dates Personal
 // Not used by this edition; Info.plist needs some URL scheme value.
 GOOGLE_REVERSED_CLIENT_ID = com.kevinaoneill.ImportantDates.personal
+// App Group shared by the app and the home screen widget (WIDGET_SETUP.md).
+// Must match HomeWidgetSync.appGroupId in lib/services/home_widget_sync.dart.
+APP_GROUP_ID = group.com.kevinaoneill.ImportantDates.personal

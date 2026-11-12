@@ -1,5 +1,15 @@
 # Important Dates – Flutter Changelog
 
+## 3.0.73FL
+- **Home screen widget "Upcoming Dates"** on iPhone/iPad and Android: the next items due, days left, and how many
+  are due within 30 days or overdue. iOS: small, medium and large home screen sizes plus lock screen (inline,
+  circular, rectangular), iOS 17+. Android: resizable, 1–4 items. Days left move on daily without opening the app.
+  Data goes through `home_widget` (`lib/services/home_widget_sync.dart`); per-flavor App Groups on iOS.
+- App Settings › Home Screen Widget › **Show Item Names** (on by default): off, the widget shows only dates and
+  counts, as it can be seen without unlocking the app.
+- iOS project: new target ImportantDatesWidgetExtension and Runner entitlements (`tool/add_ios_widget.py`).
+  One-time App Group setup on developer.apple.com: see WIDGET_SETUP.md. No widget on macOS yet.
+
 ## 3.0.72FL
 - Attachments: the + button offers Photo Library, Take Photo or Files on iOS and Android (before, only Files,
   which does not show the photo library on iPhone). Photos are saved as JPEG named "Photo <date> <time>.jpg".

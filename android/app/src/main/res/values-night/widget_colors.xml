@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home screen widget colours (dark). -->
+<resources>
+    <color name="widget_background">#1C1D22</color>
+    <color name="widget_row_background">#2A2C33</color>
+    <color name="widget_text">#F2F3F7</color>
+    <color name="widget_secondary_text">#A3A7B5</color>
+    <color name="widget_primary">#6E96F5</color>
+    <color name="widget_success">#3CC98C</color>
+    <color name="widget_warning">#F2A23C</color>
+    <color name="widget_danger">#F2606B</color>
+</resources>

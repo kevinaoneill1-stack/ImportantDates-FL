@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home screen widget colours (light). Status colours match AppTheme. -->
+<resources>
+    <color name="widget_background">#F7F9FC</color>
+    <color name="widget_row_background">#FFFFFF</color>
+    <color name="widget_text">#1A1C22</color>
+    <color name="widget_secondary_text">#6B7080</color>
+    <color name="widget_primary">#2963EB</color>
+    <color name="widget_success">#1FA86E</color>
+    <color name="widget_warning">#D9780F</color>
+    <color name="widget_danger">#E63845</color>
+</resources>

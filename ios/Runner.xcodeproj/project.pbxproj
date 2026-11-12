@@ -19,6 +19,8 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		DBA060912942DD6941143093 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA694A5E20DFEE63395458D /* Pods_Runner.framework */; };
 		F448E4C2FFB582485C287169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65ED13F0C0B96DE891FB0BF1 /* GoogleService-Info.plist */; };
+		39623E530A5D1CEB34ABBB8F /* ImportantDatesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E22E08E0DCE5B1EA2C3F9DC /* ImportantDatesWidget.swift */; };
+		FFF4C04CD26AF27708719800 /* ImportantDatesWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E69CE9A125CE29B92B55DF2 /* ImportantDatesWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +30,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
+		};
+		A976135A0D9073D49CCF924C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFE0E640246110D331A982FF;
+			remoteInfo = ImportantDatesWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -40,6 +49,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6980A618F2D537A9AB8350D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FFF4C04CD26AF27708719800 /* ImportantDatesWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -91,6 +111,13 @@
 		F761458C42130DC435F3620D /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F92FB4789D93A57ED6BB165B /* Pods-RunnerTests.release-personal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release-personal.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release-personal.xcconfig"; sourceTree = "<group>"; };
 		FD17B3B4B1BFE9959695E9F6 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
+		3E69CE9A125CE29B92B55DF2 /* ImportantDatesWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImportantDatesWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E22E08E0DCE5B1EA2C3F9DC /* ImportantDatesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantDatesWidget.swift; sourceTree = "<group>"; };
+		ED6DED860038DC4ABA97C143 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32DC391B0C7FB1C7AF2586AF /* ImportantDatesWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ImportantDatesWidget.entitlements; sourceTree = "<group>"; };
+		85636D0D33CA7E5452AA53B8 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		47513B6B4CF8EF9ECB500907 /* Widget-personal.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Widget-personal.xcconfig"; path = "Flutter/Widget-personal.xcconfig"; sourceTree = "<group>"; };
+		AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "Widget-public.xcconfig"; path = "Flutter/Widget-public.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +135,13 @@
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				DBA060912942DD6941143093 /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08CBBE75202E3BB58828403A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +206,8 @@
 				688B3132BA35A73983CB7FC4 /* Debug-public.xcconfig */,
 				78A360D019F634018D046B51 /* Release-public.xcconfig */,
 				A27610C3300B9C4DECCD7466 /* Profile-public.xcconfig */,
+				47513B6B4CF8EF9ECB500907 /* Widget-personal.xcconfig */,
+				AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */,
 			);
 			name = Flutter;
 			sourceTree = "<group>";
@@ -181,6 +217,7 @@
 			children = (
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
+				564DFB07ED3F65D94F6A1F00 /* ImportantDatesWidget */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
 				8D433EBC56278BB497F8D04D /* Pods */,
@@ -194,6 +231,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
+				3E69CE9A125CE29B92B55DF2 /* ImportantDatesWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -205,6 +243,7 @@
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
+				85636D0D33CA7E5452AA53B8 /* Runner.entitlements */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
@@ -212,6 +251,16 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		564DFB07ED3F65D94F6A1F00 /* ImportantDatesWidget */ = {
+			isa = PBXGroup;
+			children = (
+				6E22E08E0DCE5B1EA2C3F9DC /* ImportantDatesWidget.swift */,
+				ED6DED860038DC4ABA97C143 /* Info.plist */,
+				32DC391B0C7FB1C7AF2586AF /* ImportantDatesWidget.entitlements */,
+			);
+			path = ImportantDatesWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,12 +295,14 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
+				D6980A618F2D537A9AB8350D /* Embed Foundation Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				D92635C855B0792A90183C01 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				7AFC6FB67AEC3DCFF1C11E10 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			packageProductDependencies = (
@@ -260,6 +311,23 @@
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		EFE0E640246110D331A982FF /* ImportantDatesWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6CB16DDF9BBBD9ACBE9CB85F /* Build configuration list for PBXNativeTarget "ImportantDatesWidgetExtension" */;
+			buildPhases = (
+				B426DB146B5028FE85574498 /* Sources */,
+				08CBBE75202E3BB58828403A /* Frameworks */,
+				8AB696F6267156C1BFDF2B4F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ImportantDatesWidgetExtension;
+			productName = ImportantDatesWidgetExtension;
+			productReference = 3E69CE9A125CE29B92B55DF2 /* ImportantDatesWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -271,6 +339,9 @@
 				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
+					EFE0E640246110D331A982FF = {
+						CreatedOnToolsVersion = 16.0;
+					};
 					331C8080294A63A400263BE5 = {
 						CreatedOnToolsVersion = 14.0;
 						TestTargetID = 97C146ED1CF9000F007C117D;
@@ -299,6 +370,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
+				EFE0E640246110D331A982FF /* ImportantDatesWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -320,6 +392,13 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				F448E4C2FFB582485C287169 /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AB696F6267156C1BFDF2B4F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +518,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B426DB146B5028FE85574498 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				39623E530A5D1CEB34ABBB8F /* ImportantDatesWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -446,6 +533,11 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 331C8085294A63A400263BE5 /* PBXContainerItemProxy */;
+		};
+		7AFC6FB67AEC3DCFF1C11E10 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EFE0E640246110D331A982FF /* ImportantDatesWidgetExtension */;
+			targetProxy = A976135A0D9073D49CCF924C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -473,6 +565,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8A5E7F017D0BCE063F6F69EC /* Release-personal.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-personal";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -619,6 +712,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -641,6 +735,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 78A360D019F634018D046B51 /* Release-public.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -821,6 +916,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4F171F8BA656907FF1AD139 /* Profile-personal.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-personal";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -843,6 +939,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 688B3132BA35A73983CB7FC4 /* Debug-public.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -884,6 +981,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 92D5F6E915443A52FC625325 /* Debug-personal.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-personal";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -1094,6 +1192,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -1117,6 +1216,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -1194,6 +1294,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A27610C3300B9C4DECCD7466 /* Profile-public.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
@@ -1318,6 +1419,288 @@
 			};
 			name = "Profile-personal";
 		};
+		6F2E53F608FB266FF90DA26E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E171F34CB7FFF6762F7C8460 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		790C79F0F4133CB85ACB656A /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
+		98193D928FA6DFDC3158B271 /* Debug-personal */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47513B6B4CF8EF9ECB500907 /* Widget-personal.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.personal.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug-personal";
+		};
+		AF95B8C979031DA8B810D40A /* Debug-public */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug-public";
+		};
+		24E1F38AE7CF5C146782EEBF /* Release-personal */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47513B6B4CF8EF9ECB500907 /* Widget-personal.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.personal.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Release-personal";
+		};
+		AA364EF2D6C06F13A1AFBD31 /* Release-public */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Release-public";
+		};
+		11A92B01EAA472A0264F88F4 /* Profile-personal */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47513B6B4CF8EF9ECB500907 /* Widget-personal.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.personal.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Profile-personal";
+		};
+		20E4CEE1A9DB8261AFA2976C /* Profile-public */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB4DF8742AFC6ED923F2330F /* Widget-public.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ImportantDatesWidget/ImportantDatesWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = C62Q8V6ZP5;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImportantDatesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kevinaoneill.ImportantDates.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Profile-public";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1365,6 +1748,22 @@
 				28BDA858E6DBEB1C0592FE26 /* Release-public */,
 				620D4DFF7D06D69604E18431 /* Profile-personal */,
 				D019621CC6C263475C9471EA /* Profile-public */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6CB16DDF9BBBD9ACBE9CB85F /* Build configuration list for PBXNativeTarget "ImportantDatesWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F2E53F608FB266FF90DA26E /* Debug */,
+				E171F34CB7FFF6762F7C8460 /* Release */,
+				790C79F0F4133CB85ACB656A /* Profile */,
+				98193D928FA6DFDC3158B271 /* Debug-personal */,
+				AF95B8C979031DA8B810D40A /* Debug-public */,
+				24E1F38AE7CF5C146782EEBF /* Release-personal */,
+				AA364EF2D6C06F13A1AFBD31 /* Release-public */,
+				11A92B01EAA472A0264F88F4 /* Profile-personal */,
+				20E4CEE1A9DB8261AFA2976C /* Profile-public */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

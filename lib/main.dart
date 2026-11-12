@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'app_info.dart';
@@ -9,6 +11,7 @@ import 'screens/lock_gate.dart';
 import 'services/attachment_sync.dart';
 import 'services/cloud_sync.dart';
 import 'services/drive_sync.dart';
+import 'services/home_widget_sync.dart';
 import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
@@ -29,6 +32,8 @@ Future<void> runImportantDates(AppFlavor flavor) async {
   } else {
     await DriveSync.instance.init();
   }
+  // Not awaited: the widget must never hold up start-up.
+  unawaited(HomeWidgetSync.instance.init());
   runApp(const ImportantDatesApp());
 }
 

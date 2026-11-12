@@ -11,6 +11,7 @@ import '../services/app_log.dart';
 import '../services/backup_service.dart';
 import '../services/biometric_unlock.dart';
 import '../services/file_actions.dart';
+import '../services/home_widget_sync.dart';
 import '../services/sync_backend.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_utils.dart';
@@ -50,6 +51,7 @@ class SettingsScreen extends StatelessWidget {
           const _AppPasscodeCard(),
           const _HomeAppearanceCard(),
           const _ToolsShortcutsCard(),
+          if (HomeWidgetSync.supported) const _HomeWidgetCard(),
           const _AutomaticBackupCard(),
           const _StorageCard(),
           const _RecentProblemsCard(),
@@ -267,6 +269,40 @@ class _HomeAppearanceCardState extends State<_HomeAppearanceCard> {
         ]),
         Slider(value: value.clamp(min, max), min: min, max: max, divisions: divisions, onChanged: onChanged),
       ]);
+}
+
+class _HomeWidgetCard extends StatelessWidget {
+  const _HomeWidgetCard();
+  @override
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _settingsChanges, builder: (context, child) => _content(context));
+
+  Widget _content(BuildContext context) {
+    final s = AppSettings.instance;
+    final t = Theme.of(context).textTheme;
+    return AppCard(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        const SectionTitle(
+          title: 'Home Screen Widget',
+          subtitle: 'Upcoming dates on your home screen or lock screen',
+          icon: Icons.widgets_rounded,
+        ),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Show Item Names', style: TextStyle(fontWeight: FontWeight.w600)),
+          subtitle: const Text('Off: the widget shows only how many items are due and the days left'),
+          value: s.widgetShowDetails,
+          activeTrackColor: AppTheme.primary,
+          onChanged: (v) => s.widgetShowDetails = v,
+        ),
+        Text(
+          'The widget can be seen without unlocking the app. To add it, touch and hold the home screen '
+          '(or lock screen on iPhone) and pick Important Dates.',
+          style: t.bodySmall,
+        ),
+      ]),
+    );
+  }
 }
 
 class _ToolsShortcutsCard extends StatelessWidget {
