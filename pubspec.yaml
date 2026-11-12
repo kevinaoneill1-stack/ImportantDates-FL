@@ -2,8 +2,8 @@ name: important_dates
 description: "Important Dates - renewal, expiry and travel document organiser for iOS, macOS and Android."
 publish_to: 'none'
 
-# Version 3, Build 72 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
-version: 3.0.0+72
+# Version 3, Build 73 (Flutter port of the native iOS ImportantDates_v3_Build61 project).
+version: 3.0.0+73
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
@@ -40,6 +40,8 @@ dependencies:
   google_sign_in: ^7.1.0
   googleapis: ">=13.2.0 <17.0.0"
   http: ^1.2.2
+  # Home screen / lock screen widget "Upcoming Dates" (iOS and Android).
+  home_widget: ^0.10.0
   # Shared document storage used by all my apps (Flutter Apps/document-store).
   # Fetched from GitHub so a fresh clone builds on any machine (pubspec.lock
   # pins the exact commit; `flutter pub upgrade document_store` takes the

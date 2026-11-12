@@ -1,0 +1,7 @@
+// Widget extension (ImportantDatesWidget), public edition. No CocoaPods here:
+// the widget links no Flutter plugins. Generated.xcconfig gives it the app's
+// version (FLUTTER_BUILD_NAME / FLUTTER_BUILD_NUMBER).
+FLUTTER_BUILD_NAME = 3.0.0
+FLUTTER_BUILD_NUMBER = 1
+#include? "Generated.xcconfig"
+#include "Flavor-public.xcconfig"

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_title">Upcoming</string>
+    <string name="widget_description">Your next renewal and expiry dates</string>
+    <string name="widget_empty">Nothing coming up</string>
+    <string name="widget_untitled">Item</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_tomorrow">Tomorrow</string>
+    <string name="widget_due_on">Due %1$s</string>
+    <string name="widget_due_30_count">%1$d in 30 days</string>
+    <string name="widget_overdue_count">%1$d overdue</string>
+    <plurals name="widget_days_left">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="widget_days_overdue">
+        <item quantity="one">%1$d day overdue</item>
+        <item quantity="other">%1$d days overdue</item>
+    </plurals>
+</resources>

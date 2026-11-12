@@ -3,3 +3,6 @@ APP_DISPLAY_NAME = Important Dates
 // The "iOS URL scheme" of the iOS OAuth client in GoogleDriveConfig.iosClientId,
 // e.g. com.googleusercontent.apps.1234567890-abc123def456
 GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.461991683844-d5tbnv41ls4imlcvg1ubp3maa1scevhd
+// App Group shared by the app and the home screen widget (WIDGET_SETUP.md).
+// Must match HomeWidgetSync.appGroupId in lib/services/home_widget_sync.dart.
+APP_GROUP_ID = group.com.kevinaoneill.ImportantDates

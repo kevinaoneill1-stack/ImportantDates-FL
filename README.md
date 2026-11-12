@@ -1,6 +1,6 @@
 # Important Dates — Flutter edition
 
-**Version 3.0.72FL** (Version 3 • Build 72FL)
+**Version 3.0.73FL** (Version 3 • Build 73FL)
 
 A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
 Mac and Android** from one code base. It replaces the native app on the App
@@ -128,7 +128,8 @@ The folder name no longer changes between builds, so Xcode caches keep working.
 | App passcode lock, Delete-All passcode | ✅ |
 | Launch disclaimer, Developer Controls | ✅ Debug & Profile builds only, codes from the git-ignored `dev_codes.json` (see FLAVORS_SETUP.md) |
 | SwiftData + iCloud/CloudKit sync | ✅ **Cloud Sync through Firebase** (from 3.0.64FL), including attachment files |
-| Home Screen widget, Apple Watch app | ❌ Not included (native-only targets) |
+| Home Screen widget | ✅ "Upcoming Dates" on iPhone/iPad (home + lock screen) and Android, from 3.0.73FL (see WIDGET_SETUP.md); not on Mac |
+| Apple Watch app | ❌ Not included (native-only target) |
 
 ## Project layout
 
@@ -144,6 +145,7 @@ lib/
   widgets/     cards, headers, page scaffolding
   screens/     every screen of the app
 assets/        default Home image, DejaVu fonts for PDF reports
-tool/          bump_build.dart
+tool/          bump_build.dart, flavorize_xcode.py, add_ios_widget.py
+ios/ImportantDatesWidget/   iOS widget extension (WidgetKit)
 firestore.rules, storage.rules   Firebase security rules (publish in the console)
 ```
