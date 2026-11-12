@@ -43,7 +43,7 @@ android {
         }
         create("public") {
             dimension = "edition"
-            resValue("string", "app_name", "Important Dates")
+            resValue("string", "app_name", "My Dates")
         }
     }
 

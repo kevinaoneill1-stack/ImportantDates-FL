@@ -10,7 +10,7 @@ feature goes into both.
 | Entry point | `lib/main_personal.dart` | `lib/main_public.dart` |
 | iOS / macOS id | `com.kevinaoneill.ImportantDates.personal` | `com.kevinaoneill.ImportantDates` (existing App Store record) |
 | Android id | `com.kevinaoneill.importantdates.personal` | `com.kevinaoneill.importantdates` |
-| Home-screen name | Important Dates Personal | Important Dates |
+| Home-screen name | Important Dates Personal | My Dates |
 
 Always pass both `--flavor` and `-t`:
 

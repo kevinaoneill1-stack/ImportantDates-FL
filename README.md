@@ -1,6 +1,6 @@
 # Important Dates — Flutter edition
 
-**Version 3.0.73FL** (Version 3 • Build 73FL)
+**Version 3.0.74FL** (Version 3 • Build 74FL)
 
 A Flutter version of the native iOS **ImportantDates** app for **iPhone, iPad,
 Mac and Android** from one code base. It replaces the native app on the App
