@@ -1,9 +1,5 @@
 # Important Dates – Flutter Changelog
 
-## 3.0.74FL
-- The public edition's name under its icon is now **My Dates** (iPhone/iPad and Android). The personal edition
-  stays "Important Dates Personal"; the Mac app and the name inside the app, reports and backups are unchanged.
-
 ## 3.0.73FL
 - **Home screen widget "Upcoming Dates"** on iPhone/iPad and Android: the next items due, days left, and how many
   are due within 30 days or overdue. iOS: small, medium and large home screen sizes plus lock screen (inline,
