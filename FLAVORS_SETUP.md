@@ -32,6 +32,27 @@ In Android Studio: Run › Edit Configurations › add two Flutter configuration
 Dart entrypoint `lib/main_personal.dart` / `lib/main_public.dart`, Build flavor
 `personal` / `public`. In Xcode: pick the **personal** or **public** scheme.
 
+### Uploads to TestFlight / App Store: always with `flutter build ipa`
+
+Make every upload with `flutter build ipa --flavor <personal|public> -t
+lib/main_<flavor>.dart`, not with **Product › Archive** in Xcode. Then upload
+`build/ios/ipa/*.ipa` with the Transporter app, or open the archive from
+`build/ios/archive/` in Xcode's Organizer › **Distribute App**.
+
+Why: the Xcode scheme only chooses the bundle id, icon, App Group and
+signing. Which Dart code goes in (`main_personal.dart` or `main_public.dart`)
+comes from `ios/Flutter/Generated.xcconfig`, which is written by the **last
+`flutter` command you ran**, whatever its flavor. Archiving the personal
+scheme after a public `flutter run` or `--config-only` build gives a personal
+app running the public code. That happened with build 73 (personal): signing
+in crashed (the public edition's Google sign-in has no URL scheme in the
+personal app) and the widget stayed empty (the public code writes to the
+public App Group).
+
+Running from Xcode (⌘R) has the same catch: first run
+`flutter build ios --config-only --flavor <flavor> -t lib/main_<flavor>.dart`
+for the scheme you are about to use.
+
 ## Developer access codes (kept out of git)
 
 Developer Controls (tap **App Information** in Manage › App Settings) and the
