@@ -25,6 +25,12 @@ class _ManageListScreenState extends State<ManageListScreen> {
     super.dispose();
   }
 
+  Future<void> _addReadyMade() async {
+    final n = await AppStore.instance.addMissingDefaultItems();
+    if (!mounted) return;
+    await showMessage(context, 'Items Added', 'Added $n ready-made item${n == 1 ? '' : 's'}.');
+  }
+
   Future<void> _add() async {
     final name = _controller.text.trim();
     if (name.isEmpty) return;
@@ -148,6 +154,25 @@ class _ManageListScreenState extends State<ManageListScreen> {
                   ),
             ]),
           ),
+          if (_isItems && AppStore.instance.missingDefaultItemCount > 0)
+            AppCard(
+              accent: accent,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                SectionTitle(
+                  title: 'Ready-Made Items',
+                  subtitle: '${AppStore.instance.missingDefaultItemCount} not in your list '
+                      '(Passport, Driving Licence, Car Tax…)',
+                  icon: Icons.playlist_add_rounded,
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(backgroundColor: accent),
+                  onPressed: _addReadyMade,
+                  icon: const Icon(Icons.playlist_add_rounded),
+                  label: const Text('Add Ready-Made Items'),
+                ),
+              ]),
+            ),
         ],
       );
     });

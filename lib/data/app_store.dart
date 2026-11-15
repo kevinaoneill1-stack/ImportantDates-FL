@@ -103,6 +103,24 @@ class AppStore extends ChangeNotifier {
     settings.defaultItemGroupsAdded = defaultItemGroups.length;
   }
 
+  /// Puts back every default Item the list does not have (all groups).
+  /// Used after this device's data is replaced wholesale (cloud or Drive
+  /// "use cloud" first sync, Restore Backup), since the data that came in may
+  /// predate the defaults, and by Manage Items › Add Ready-Made Items.
+  /// Returns how many were added. The change syncs like any other edit.
+  Future<int> addMissingDefaultItems() async {
+    final missing = missingDefaultItems(_items);
+    AppSettings.instance.defaultItemGroupsAdded = defaultItemGroups.length;
+    if (missing.isEmpty) return 0;
+    _items.addAll(missing);
+    _sortLists();
+    await _save(triggerBackup: false);
+    return missing.length;
+  }
+
+  /// How many default Items are not in the list.
+  int get missingDefaultItemCount => missingDefaultItems(_items).length;
+
   static String _nameOf(dynamic v) => v is Map ? (v['name'] as String? ?? '') : v.toString();
 
   void _sortLists() {
@@ -302,6 +320,8 @@ class AppStore extends ChangeNotifier {
     _sortLists();
     await _save(triggerBackup: false);
     await NotificationService.rescheduleAll(_dates);
+    // Backups from before 3.0.70FL have no default Items.
+    await addMissingDefaultItems();
   }
 
   // ---- Home image ----

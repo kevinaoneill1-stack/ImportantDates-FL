@@ -276,6 +276,8 @@ class DriveSync extends ChangeNotifier implements SyncState, AttachmentCloud {
     _knownAccount = account;
     _persistState();
     await syncNow();
+    // Drive data may have no default Items (see AppStore.addMissingDefaultItems).
+    if (useCloud) await _store.addMissingDefaultItems();
   }
 
   // ---------------------------------------------------------------- syncing

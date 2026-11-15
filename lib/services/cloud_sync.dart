@@ -181,7 +181,20 @@ class CloudSync extends ChangeNotifier implements SyncState {
     running = true;
     status = 'Up to date';
     notifyListeners();
+    await _restoreDefaultItemsAfterReplace();
     schedulePush();
+  }
+
+  /// True after this device's data was replaced by the cloud data.
+  bool _replacedLocal = false;
+
+  /// Cloud data uploaded before 3.0.70FL has no default Items, so replacing
+  /// this device's data with it dropped them (and they were never added
+  /// again). Puts them back; the change is then pushed like any edit.
+  Future<void> _restoreDefaultItemsAfterReplace() async {
+    if (!_replacedLocal) return;
+    _replacedLocal = false;
+    await _store.addMissingDefaultItems();
   }
 
   /// [useCloud]: replace this device's data with the cloud data.
@@ -197,6 +210,7 @@ class CloudSync extends ChangeNotifier implements SyncState {
       _listen(user!.uid);
       running = true;
       status = 'Up to date';
+      await _restoreDefaultItemsAfterReplace();
     } catch (e) {
       error = 'First sync failed: $e';
     } finally {
@@ -228,6 +242,7 @@ class CloudSync extends ChangeNotifier implements SyncState {
         _store.syncPeople.clear();
         _seenLocal.clear();
         await NotificationService.cancelAll();
+        _replacedLocal = true;
       }
       for (final c in _collections) {
         final docs = await _col(uid, c).get();
