@@ -63,3 +63,7 @@ dev_codes.json
 
 # Local-only dependency overrides (see pubspec_overrides.example.yaml)
 pubspec_overrides.yaml
+build_personal_ipa.command
+build_personal_ipa.log
+build_public_ipa.command
+build_public_ipa.log
